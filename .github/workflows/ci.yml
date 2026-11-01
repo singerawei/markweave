@@ -20,10 +20,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
-      - run: npx playwright install --with-deps chromium
-      - name: Install Chromium headless shell for VSIX packaging
+      - name: Install Playwright browsers (Linux)
+        if: runner.os == 'Linux'
+        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers (Windows)
         if: runner.os == 'Windows'
-        run: npx playwright install chromium-headless-shell
+        run: npx playwright install chromium chromium-headless-shell
       - run: npm run test:ui
       - run: npm run bench
       - run: npm run package
@@ -51,7 +53,8 @@ jobs:
             bench/results/
             docs/review-artifacts/response-0.3/
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Pre-release tags are published manually with a locally verified VSIX.
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-')
     needs: verify
     runs-on: ubuntu-latest
     permissions:

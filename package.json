@@ -261,16 +261,16 @@
     "mermaid",
     "pdf"
   ],
-  "author": "SingerAW",
+  "author": "singerawei",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SingerAW/markdownup.git"
+    "url": "https://github.com/singerawei/markdownup.git"
   },
   "bugs": {
-    "url": "https://github.com/SingerAW/markdownup/issues"
+    "url": "https://github.com/singerawei/markdownup/issues"
   },
-  "homepage": "https://github.com/SingerAW/markdownup#readme",
+  "homepage": "https://github.com/singerawei/markdownup#readme",
   "description": "Local-first WYSIWYG Markdown with editable, source-owned includes and lazy large-document rendering.",
   "dependencies": {
     "highlight.js": "^11.12.0",

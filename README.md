@@ -25,7 +25,7 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 
 安装包作为 GitHub Release 资源提供，不直接提交到 Git 仓库，因为 VSIX 约 125 MB（内含 Mermaid/PDF 使用的 Chromium 引擎）。
 
-1. 打开 [Releases](https://github.com/SingerAW/markdownup/releases/latest)，下载 `markdownup-win32-x64-0.3.0.vsix`。
+1. 打开 [GitHub Releases](https://github.com/singerawei/markdownup/releases)，下载 `markdownup-win32-x64-0.3.0.vsix`。
 2. 在 VS Code 中打开扩展视图，点击 **… → Install from VSIX…**，选择下载的文件。
 3. 重新加载 VS Code。
 4. 右键任意 `.md` 文件，选择 **Open With → Modular Markdown Editor**。
@@ -35,7 +35,7 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 ### 从源码构建
 
 ```sh
-git clone https://github.com/SingerAW/markdownup.git
+git clone https://github.com/singerawei/markdownup.git
 cd markdownup
 npm ci
 npx playwright install chromium-headless-shell
