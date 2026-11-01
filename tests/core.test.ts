@@ -151,7 +151,9 @@ test('real filesystem: Unicode, Windows separators, traversal, symlink and git d
   execFileSync('git',['-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture'],{cwd:directory});
   const io = new LocalFileIO([directory]); const repository = new SourceRepository(io);
   const graph = new DocumentGraph(repository,pathToFileURL(masterPath).href); await graph.build();
-  const source = repository.sources.get(pathToFileURL(childPath).href)!;
+  // Temporary directories may use Windows 8.3 short names on CI. Resolve the
+  // include through the same canonicalization path the graph used.
+  const source = repository.sources.get(await io.resolve(pathToFileURL(masterPath).href,'./章节/支付.md'))!;
   const piece = source.pieces.find(p => p.raw.includes('Stripe'))!;
   repository.apply([{uri:source.uri,pieceId:piece.id,before:piece.raw,after:'Adyen\r\n'}]); await repository.save(graph.sourceUris);
   assert.equal(await readFile(masterPath,'utf8'),masterText);
