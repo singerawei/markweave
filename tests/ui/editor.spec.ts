@@ -313,6 +313,7 @@ test('keyboard-only navigation, toolbar, insert and save cycles keep focus',asyn
     await expect(page.locator('.ProseMirror')).toBeFocused();
     await page.keyboard.press('Control+Alt+t');
     await expect(page.locator('#toolbar')).toBeHidden();
+    await page.waitForTimeout(50);
     await page.keyboard.press('Control+Alt+t');
     await expect(page.locator('#toolbar')).toBeVisible();
     await page.keyboard.press('Control+Alt+i');
