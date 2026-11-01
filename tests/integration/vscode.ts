@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { mkdtemp,writeFile,readFile,rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { EditorProvider } from '../../src/extension/editorProvider';
-import { uriForPath } from '../../src/document/fileIO';
 import { generate } from '../../bench/generator';
 import { CompositeDocument } from '../../src/extension/compositeDocument';
 import{serializeSource}from'../../src/document/serializer';
@@ -58,7 +57,8 @@ export async function run() {
     await vscode.commands.executeCommand(command);
     await wait(() => posted.some(message => message.type === 'command' && message.command === action));
   }
-  const source = document.repository.sources.get(uriForPath(child))!;
+  const childUri = await document.repository.io.resolve(document.rootUri,'./child.md');
+  const source = document.repository.sources.get(childUri)!;
   const piece = source.pieces.find(p => p.raw.includes('Stripe'))!;
   let event:vscode.CustomDocumentEditEvent<any> | undefined;
   const subscription = provider.onDidChangeCustomDocument(change => { event = change; });
@@ -86,7 +86,7 @@ export async function run() {
   console.log("HOST_STAGE recovery");
   subscription.dispose(); document.panels.clear(); document.dispose();
   const restored = await provider.openCustomDocument(vscode.Uri.file(master),{backupId:backup.id,untitledDocumentData:undefined});
-  assert.ok([...restored.dirtySources].includes(uriForPath(child)));
+  assert.ok([...restored.dirtySources].includes(childUri));
   await provider.saveCustomDocument(restored); assert.match(await readFile(child,'utf8'),/Adyen/);
   restored.dispose();
   const pending = await provider.openCustomDocument(vscode.Uri.file(master),{backupId:undefined,untitledDocumentData:undefined});
@@ -103,7 +103,7 @@ export async function run() {
   console.log("HOST_STAGE pdf");
   await writeFile(child,'# Payment 中文\n\nSaved version\n\n```mermaid\nflowchart LR\n A[Start] --> B[Finish]\n```\n');
   const pdfDoc=await provider.openCustomDocument(vscode.Uri.file(master),{backupId:undefined,untitledDocumentData:undefined});await pdfDoc.graph.build();pdfDoc.trackSources();
-  const payment=pdfDoc.repository.sources.get(uriForPath(child))!;const paymentPiece=payment.pieces.find(piece=>piece.raw.includes('Saved version'))!;
+  const pdfChildUri=await pdfDoc.repository.io.resolve(pdfDoc.rootUri,'./child.md');const payment=pdfDoc.repository.sources.get(pdfChildUri)!;const paymentPiece=payment.pieces.find(piece=>piece.raw.includes('Saved version'))!;
   pdfDoc.repository.apply([{uri:payment.uri,pieceId:paymentPiece.id,before:paymentPiece.raw,after:'UNSAVED EXPORT SNAPSHOT\n'}]);
   const pdf=await provider.exportToPdf(pdfDoc,{format:'A4',landscape:false,margin:20,fontSize:14,header:'Integration test',footer:'Offline export',pageNumbers:true,headingBreak:false,preview:true});
   const pdfBytes=await readFile(pdf!.fsPath);assert.equal(pdfBytes.subarray(0,4).toString(),'%PDF');assert.ok(pdfBytes.length>2000);assert.match(await readFile(child,'utf8'),/Saved version/);
