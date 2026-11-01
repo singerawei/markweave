@@ -1,0 +1,12 @@
+{
+  "version": "0.3.0",
+  "created": "2026-11-01T09:13:56.851Z",
+  "buildHashes": {
+    "editor.js": "41c70b2116dcb20b2422c445d692808f63797b2f3bead20ea30bec7b737ab46d",
+    "editor.css": "95d46c569db7dbba1ec414b5347de8937c539f1abf9f8e4736020042ca4dac70",
+    "extension.js": "a9dd9765656d684b94634d7f26d2d5f1794bff68c9a8ed182c0ad702d7ba5c4d",
+    "mermaid-runtime.js": "24c819b8cb01c246ab70b0c605af2ffdb221571071b7d3b5eba8eeb978dc455d",
+    "export-renderer.js": "cb11f42f04375748e89785ab6a84307f567e012e15dfc98e3441ecc3cc8fe8bc"
+  },
+  "vsixSha256": "ed3eda27136efe9d39dc42f6223a8522db1085b5242301cacd3ec0c6f263f720"
+}

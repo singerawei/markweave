@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-10-31T16:23:42.406Z",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz",
+    "cores": 8,
+    "ramGB": 16,
+    "os": "win32 10.0.19045",
+    "node": "v20.19.6",
+    "vscode": "1.123.0\n6a44c352bd24569c417e530095901b649960f9f8\nx64"
+  },
+  "scope": "Host model only. Browser cold-open, scrolling and event-to-render release gates require UI/VS Code measurements.",
+  "results": [
+    {
+      "case": "A-100KB.md",
+      "loadMs": 108,
+      "segments": 2498,
+      "sources": 1,
+      "editP95Ms": 0.016,
+      "saveMs": 6.33,
+      "heapMB": 19
+    },
+    {
+      "case": "B-1MB.md",
+      "loadMs": 575,
+      "segments": 25575,
+      "sources": 1,
+      "editP95Ms": 0.002,
+      "saveMs": 18.25,
+      "heapMB": 76
+    },
+    {
+      "case": "C-5MB.md",
+      "loadMs": 2436,
+      "segments": 127876,
+      "sources": 1,
+      "editP95Ms": 0.002,
+      "saveMs": 66.49,
+      "heapMB": 345
+    },
+    {
+      "case": "D-100-includes/MASTER.md",
+      "loadMs": 2099,
+      "segments": 128001,
+      "sources": 101,
+      "editP95Ms": 0.001,
+      "saveMs": 4.37,
+      "heapMB": 158
+    },
+    {
+      "case": "E-500-includes/MASTER.md",
+      "loadMs": 2552,
+      "segments": 128001,
+      "sources": 501,
+      "editP95Ms": 0.001,
+      "saveMs": 4.23,
+      "heapMB": 253
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+
+
+DevTools listening on ws://127.0.0.1:1099/devtools/browser/ac5e7b1c-1d59-47b5-a2bc-7ab2e8941f1a
+Warning: 'remote-debugging-port' is not in the list of known options, but still passed to Electron/Chromium.
+[main 2026-11-01T07:27:50.072Z] StorageMainService: creating application shared storage
+[main 2026-11-01T07:27:50.162Z] [shared storage] Creating shared storage database at ':memory:' (wasCreated: true)
+[main 2026-11-01T07:27:50.164Z] [shared storage] Initializing fallback application storage (path: in-memory)
+[main 2026-11-01T07:27:50.166Z] Error: Error mutex already exists
+    at xs.installMutex (file:///C:/Users/26967/AppData/Local/Programs/Microsoft%20VS%20Code/6a44c352bd/resources/app/out/main.js:557:25857)
+[main 2026-11-01T07:27:50.209Z] [shared storage] Fallback application storage initialized with 3 items
+[main 2026-11-01T07:27:50.210Z] update#setState disabled
+[main 2026-11-01T07:27:50.211Z] update#ctor - updates are disabled by user preference
+Started local extension host with pid 21324.
+Started initializing default profile extensions in extensions installation folder. file:///c%3A/Users/26967/AppData/Local/Temp/markdownup-live-review-MW9aLQ/session-1/extensions
+Completed initializing default profile extensions in extensions installation folder. file:///c%3A/Users/26967/AppData/Local/Temp/markdownup-live-review-MW9aLQ/session-1/extensions
+Loading development extension at d:\deskTop\diy软件\MarkDownUP
+[AccountPolicyGate] apply: state=inactive, reason=undefined, isRestricted=false
+Settings Sync: Account status changed from uninitialized to unavailable
+MARKDOWNUP_LIVE_REVIEW_READY
+[AccountPolicyGate] apply: state=inactive, reason=undefined, isRestricted=false
+[main 2026-11-01T07:28:43.615Z] Extension host with pid 21324 exited with code: 0, signal: unknown.

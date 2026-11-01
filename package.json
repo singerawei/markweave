@@ -1,0 +1,307 @@
+{
+  "name": "markdownup",
+  "version": "0.3.0",
+  "displayName": "MarkdownUP — Modular Markdown Editor",
+  "publisher": "markdownup",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCustomEditor:markdownup.editor"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "markdownup.editor",
+        "displayName": "Modular Markdown Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.MD"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "markdownup.open",
+        "title": "MarkdownUP: Open WYSIWYG Editor"
+      },
+      {
+        "command": "markdownup.save",
+        "title": "MarkdownUP: Save",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.saveAs",
+        "title": "MarkdownUP: Save As",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.exportPdf",
+        "title": "MarkdownUP: Export PDF"
+      },
+      {
+        "command": "markdownup.bold",
+        "title": "MarkdownUP: Bold",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.italic",
+        "title": "MarkdownUP: Italic",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.inlineCode",
+        "title": "MarkdownUP: Inline Code",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.undo",
+        "title": "MarkdownUP: Undo",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.redo",
+        "title": "MarkdownUP: Redo",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.find",
+        "title": "MarkdownUP: Find in Document",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.outline",
+        "title": "MarkdownUP: Document Outline",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.navigate",
+        "title": "MarkdownUP: Navigate",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.pinNavigation",
+        "title": "MarkdownUP: Pin Navigation",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.toggleToolbar",
+        "title": "MarkdownUP: Toggle Toolbar",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.focusMode",
+        "title": "MarkdownUP: Focus Mode",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.help",
+        "title": "MarkdownUP: Help",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.manageIncludes",
+        "title": "MarkdownUP: Manage Includes",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.revealSource",
+        "title": "MarkdownUP: Reveal Source",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.insert",
+        "title": "MarkdownUP: Insert",
+        "enablement": "activeCustomEditorId == markdownup.editor"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "markdownup.save",
+        "key": "ctrl+s",
+        "mac": "cmd+s",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.saveAs",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.find",
+        "key": "ctrl+f",
+        "mac": "cmd+f",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.outline",
+        "key": "ctrl+shift+o",
+        "mac": "cmd+shift+o",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.outline",
+        "key": "ctrl+alt+o",
+        "mac": "cmd+alt+o",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.pinNavigation",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.toggleToolbar",
+        "key": "ctrl+alt+t",
+        "mac": "cmd+alt+t",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.insert",
+        "key": "ctrl+alt+i",
+        "mac": "cmd+alt+i",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.focusMode",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.help",
+        "key": "ctrl+alt+h",
+        "mac": "cmd+alt+h",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.bold",
+        "key": "ctrl+b",
+        "mac": "cmd+b",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.italic",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "activeCustomEditorId == markdownup.editor"
+      },
+      {
+        "command": "markdownup.exportPdf",
+        "key": "ctrl+alt+e",
+        "mac": "cmd+alt+e",
+        "when": "activeCustomEditorId == markdownup.editor"
+      }
+    ],
+    "configuration": {
+      "title": "MarkdownUP",
+      "properties": {
+        "markdownup.defaultNavigationMode": {
+          "type": "string",
+          "enum": [
+            "find",
+            "outline"
+          ],
+          "default": "find",
+          "description": "Navigation mode used when a document has no saved preference."
+        },
+        "markdownup.showToolbar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the MarkdownUP toolbar for documents without a saved preference."
+        }
+      }
+    },
+    "menus": {
+      "webview/context": [
+        {
+          "command": "markdownup.exportPdf",
+          "when": "webviewSection == markdownup",
+          "group": "navigation"
+        },
+        {
+          "command": "markdownup.revealSource",
+          "when": "webviewSection == markdownup",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "vscode:prepublish": "npm run build",
+    "lint": "eslint src tests bench",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/core.test.ts tests/roundtrip.test.ts tests/review.test.ts tests/contract.test.ts tests/gates.test.mjs",
+    "test:ui": "playwright test",
+    "test:host": "node scripts/test-host.mjs",
+    "bench": "tsx bench/run.ts",
+    "package": "node scripts/bundle-engine.mjs && vsce package --target win32-x64 --no-dependencies --allow-missing-repository --no-rewrite-relative-links",
+    "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "release:gate": "node scripts/check-release.mjs",
+    "test:review": "node scripts/prepare-review.mjs && node scripts/verify-review.mjs"
+  },
+  "keywords": [
+    "markdown",
+    "wysiwyg",
+    "markdown-editor",
+    "markdown-preview",
+    "includes",
+    "mermaid",
+    "pdf"
+  ],
+  "author": "SingerAW",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SingerAW/markdownup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SingerAW/markdownup/issues"
+  },
+  "homepage": "https://github.com/SingerAW/markdownup#readme",
+  "description": "Local-first WYSIWYG Markdown with editable, source-owned includes and lazy large-document rendering.",
+  "dependencies": {
+    "highlight.js": "^11.12.0",
+    "lucide": "^1.66.0",
+    "markdown-it": "^15.0.3",
+    "mermaid": "^11.17.2",
+    "playwright-core": "^1.64.1",
+    "prosemirror-commands": "^1.7.2",
+    "prosemirror-inputrules": "^1.5.1",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-markdown": "^1.13.9",
+    "prosemirror-model": "^1.25.12",
+    "prosemirror-schema-list": "^1.6.0",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-tables": "^1.8.5",
+    "prosemirror-view": "^1.42.9"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
+    "@types/markdown-it": "^14.2.0",
+    "@types/node": "^26.6.6",
+    "@types/vscode": "1.100.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.14.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1"
+  },
+  "overrides": {
+    "katex": "0.18.2"
+  }
+}

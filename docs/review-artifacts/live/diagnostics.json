@@ -1,0 +1,145 @@
+{
+  "timestamp": "2026-11-01T07:37:17.144Z",
+  "tests": [
+    {
+      "name": "Fullscreen scoped",
+      "before": {
+        "w": 794,
+        "h": 752,
+        "fullscreen": false
+      },
+      "after": {
+        "w": 794,
+        "h": 752,
+        "fullscreen": false,
+        "class": "vscode-light focus-mode"
+      }
+    },
+    {
+      "name": "settled native shortcut Bold",
+      "before": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "selection": "Alpha bold and italic words.",
+      "after": "<p>Alpha bold and italic words.</p>",
+      "typed": "<p>Alpha bold and italic words.</p>",
+      "keys": [
+        {
+          "key": "Control",
+          "ctrl": true,
+          "keyCode": 17,
+          "code": "ControlLeft",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        },
+        {
+          "key": "b",
+          "ctrl": true,
+          "keyCode": 66,
+          "code": "KeyB",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        },
+        {
+          "key": "X",
+          "ctrl": false,
+          "keyCode": 88,
+          "code": "KeyX",
+          "target": "vscode-light",
+          "prevented": false
+        }
+      ]
+    },
+    {
+      "name": "settled native shortcut Italic",
+      "before": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "selection": "",
+      "after": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "typed": "<p>Alpha <strong>bold</strong> and italic words.<em>X</em></p>",
+      "keys": [
+        {
+          "key": "Control",
+          "ctrl": true,
+          "keyCode": 17,
+          "code": "ControlLeft",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        },
+        {
+          "key": "i",
+          "ctrl": true,
+          "keyCode": 73,
+          "code": "KeyI",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        },
+        {
+          "key": "X",
+          "ctrl": false,
+          "keyCode": 88,
+          "code": "KeyX",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        }
+      ]
+    },
+    {
+      "name": "settled native shortcut Inline code",
+      "before": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "selection": "",
+      "after": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "typed": "<p>Alpha <strong>bold</strong> and italic words.<code>X</code></p>",
+      "keys": [
+        {
+          "key": "Control",
+          "ctrl": true,
+          "keyCode": 17,
+          "code": "ControlLeft",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        },
+        {
+          "key": "`",
+          "ctrl": true,
+          "keyCode": 192,
+          "code": "Backquote",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        },
+        {
+          "key": "X",
+          "ctrl": false,
+          "keyCode": 88,
+          "code": "KeyX",
+          "target": "ProseMirror ProseMirror-focused",
+          "prevented": false
+        }
+      ]
+    },
+    {
+      "name": "OS clipboard immediately",
+      "matched": false,
+      "docHasFocus": false
+    },
+    {
+      "name": "OS clipboard after document focus",
+      "matched": true,
+      "docHasFocus": true
+    },
+    {
+      "name": "PNG conversion isolate",
+      "loaded": true,
+      "error": "SecurityError: Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported."
+    },
+    {
+      "name": "Save As actual dialog",
+      "dialogs": [
+        "Reload and Enable ExtensionsAll installed extensions are temporarily disabled."
+      ],
+      "dirty": [
+        []
+      ]
+    }
+  ],
+  "rendererErrors": [
+    "NotAllowedError: Failed to execute 'writeText' on 'Clipboard': Document is not focused."
+  ]
+}

@@ -1,0 +1,154 @@
+:root{color-scheme:light dark;font-family:var(--vscode-font-family,system-ui);color:var(--vscode-editor-foreground,var(--vscode-foreground,#293241));background:var(--vscode-editor-background,#fbfbfa)}
+*{box-sizing:border-box}
+html{overflow-anchor:none}
+body{margin:0;color:var(--vscode-editor-foreground,var(--vscode-foreground,#293241));background:var(--vscode-editor-background,#fbfbfa);min-width:0}
+button{font:inherit;cursor:pointer;color:inherit;background:transparent;border:1px solid var(--vscode-widget-border,#d4d8dc);border-radius:5px;padding:5px 10px}
+button:hover{background:var(--vscode-toolbar-hoverBackground,#e8eeeb)}
+button:focus-visible,.segment:focus-visible,#navigation button:focus-visible{outline:2px solid var(--vscode-focusBorder,#539989);outline-offset:1px}
+button:disabled{opacity:.45;cursor:default}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* The only persistent chrome is the 42px toolbar. Everything else is transient. */
+#toolbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:2px;width:100%;max-width:100%;height:42px;padding:5px 8px;background:var(--vscode-editor-background,#fbfbfa);border-bottom:1px solid var(--vscode-widget-border,#e2e5e9);font-size:12px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;box-sizing:border-box}
+#toolbar::-webkit-scrollbar{display:none}
+#toolbar>button{flex:0 0 28px;min-width:0;height:30px;padding:5px;border:0;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;color:var(--vscode-icon-foreground,#53616c)}
+#toolbar>button[aria-pressed=true]{background:var(--vscode-inputOption-activeBackground,#c8e0d5);color:var(--vscode-inputOption-activeForeground,var(--vscode-editor-foreground,#20312b))}
+#toolbar .block-style{flex:0 1 112px;min-width:72px;height:30px;max-width:112px;font:inherit;background:var(--vscode-dropdown-background,var(--vscode-editor-background,#fbfbfa));color:var(--vscode-dropdown-foreground,inherit);border:1px solid var(--vscode-dropdown-border,var(--vscode-widget-border,#ccc));border-radius:4px;padding:2px 4px}
+#toolbar .block-style:disabled{opacity:.45}
+body.toolbar-hidden #toolbar{display:none}
+
+#document{max-width:900px;margin:0 auto 80px;padding:14px 44px 0;font-family:var(--vscode-markdown-font-family,system-ui);font-size:16px;line-height:1.75;overflow-wrap:anywhere;min-width:0}
+.segment{position:relative;display:flow-root;min-height:8px;content-visibility:auto;contain-intrinsic-size:auto var(--estimated-height,60px)}
+.segment:not([data-rendered]){min-height:var(--estimated-height,60px)}
+.segment::before{position:absolute;left:-16px;top:12px;bottom:12px;width:2px;background:var(--vscode-textLink-foreground,#387666);opacity:0;content:''}
+.segment:hover::before,.segment.editing::before{opacity:.35}
+.segment.editing{content-visibility:visible}
+.ProseMirror{outline:none;white-space:pre-wrap;word-wrap:break-word;min-height:1.7em}
+.ProseMirror p:first-child,h1:first-child,h2:first-child,h3:first-child{margin-top:.35em}
+p{margin:.35em 0 .9em}
+h1,h2,h3,h4,h5,h6{line-height:1.3;margin:1em 0 .5em;letter-spacing:-.025em}
+h1{font-size:2.1em}h2{font-size:1.55em}h3{font-size:1.3em}
+blockquote{border-left:3px solid var(--vscode-textLink-foreground,#55917b);margin:12px 0;padding:0 20px;opacity:.85}
+pre{padding:16px;border-radius:6px;background:var(--vscode-textCodeBlock-background,#eef1f0);overflow:auto;font-size:13px;line-height:1.6;white-space:pre;position:relative;max-width:100%}
+pre code{font-family:var(--vscode-editor-font-family,Consolas,monospace);padding:0;background:transparent;color:var(--vscode-editor-foreground,var(--vscode-foreground,#293241));white-space:pre}
+code{font-family:var(--vscode-editor-font-family,Consolas,monospace);background:var(--vscode-textCodeBlock-background,#eef1f0);border-radius:3px;padding:2px 4px}
+pre.wrap-code,pre.wrap-code>code{white-space:pre-wrap}
+a{color:var(--vscode-textLink-foreground,#387666)}
+img{max-width:100%;height:auto}
+table{border-collapse:collapse;width:100%;margin:12px 0}
+td,th{border:1px solid var(--vscode-widget-border,#d4d8dc);padding:7px 12px;min-width:50px;vertical-align:top}
+th{background:var(--vscode-textCodeBlock-background,#eef1f0);color:var(--vscode-editor-foreground,var(--vscode-foreground,#293241))}
+ul,ol{padding-left:28px}
+li[data-checked]{list-style:none;position:relative}
+li[data-checked]::before{content:'☐';position:absolute;left:-23px;cursor:pointer;color:var(--vscode-textLink-foreground,#387666)}
+li[data-checked=true]::before{content:'☑'}
+.raw-preview{font-size:13px}
+.raw-editor{width:100%;resize:vertical;background:var(--vscode-input-background,#f1f4f2);color:inherit;border:1px solid var(--vscode-focusBorder,#539989);font:13px/1.6 var(--vscode-editor-font-family,monospace);padding:12px;border-radius:5px}
+.include-error{padding:12px 18px;background:var(--vscode-inputValidation-errorBackground,#f8d7da);color:var(--vscode-editor-foreground,#4e1d25);border-left:3px solid var(--vscode-inputValidation-errorBorder,#c62828);white-space:pre-wrap;font:13px/1.6 system-ui;margin:8px 0}
+.large-block-notice{padding:10px;background:var(--vscode-textBlockQuote-background,#eef3f5);border-left:3px solid var(--vscode-textLink-foreground,#2875af);font-size:13px}
+.selectedCell{background:var(--vscode-editor-selectionBackground,#d5e8df)}
+small,.empty,.image-placeholder{opacity:.65}
+.search-hit{outline:2px solid var(--vscode-editor-findMatchBorder,#b68b00);outline-offset:3px}
+
+.block-tools{display:flex;align-items:center;justify-content:flex-end;gap:4px;font:12px system-ui;margin-bottom:6px;min-height:26px;color:var(--vscode-descriptionForeground,#586674)}
+.block-tools small{margin-right:auto;opacity:1}
+.block-tools select{max-width:45%;font-size:12px}
+.block-tools button{padding:4px;border:0;display:inline-flex;min-width:25px}
+.editing-code{min-width:0}
+.editing-code pre{margin-top:2px}
+.editing-code code{white-space:pre-wrap}
+.diagram-figure{margin:14px 0;padding:12px;border:1px solid #8882;border-radius:8px;background:var(--vscode-editor-background,#fff);min-height:120px}
+.diagram-canvas{overflow:auto;text-align:center;min-height:90px}
+.diagram-canvas svg{max-width:100%;height:auto}
+.expanded-diagram{position:fixed;inset:48px 16px 16px;z-index:30;overflow:auto;margin:0;background:var(--vscode-editor-background,#fff)}
+.diagram-editor{max-width:1100px;width:95vw}
+.diagram-editor textarea{width:100%;height:240px;font:14px/1.6 Consolas,monospace;background:var(--vscode-input-background,#f5f6f8);color:inherit}
+.diagram-editor .diagram-canvas{max-height:350px}
+
+/* Menus are portalled to the body and anchored to their trigger. */
+.insert-menu{position:fixed;z-index:60;background:var(--vscode-menu-background,#fff);color:var(--vscode-menu-foreground,#26333d);border:1px solid var(--vscode-menu-border,#87929d);padding:6px;border-radius:6px;box-shadow:0 8px 30px #0002;min-width:0;max-width:calc(100vw - 16px);overflow:auto}
+.insert-menu[hidden]{display:none}
+.insert-menu button{display:block;width:100%;text-align:left;border:0;padding:7px 10px;border-radius:3px}
+.insert-menu button[hidden]{display:none}
+.insert-menu button:hover{background:var(--vscode-menu-selectionBackground,#d6ebf5);color:var(--vscode-menu-selectionForeground,inherit)}
+.insert-menu button[aria-pressed=true]{font-weight:700}
+.block-menu{min-width:170px}
+
+/* Navigation is an overlay at every width so opening it never moves text. */
+#navigation{position:fixed;top:46px;right:8px;bottom:8px;z-index:40;display:flex;flex-direction:column;width:300px;max-width:calc(100vw - 16px);padding:10px;background:var(--vscode-editor-background,#fff);color:inherit;border:1px solid var(--vscode-widget-border,#87929d);border-radius:8px;box-shadow:0 8px 30px #0003;overflow:hidden}
+#navigation[hidden]{display:none}
+.navigation-header{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.navigation-tabs{display:flex;gap:2px;margin-right:auto}
+.navigation-tabs button{border:0;border-radius:4px;padding:5px 9px}
+.navigation-tabs button[aria-selected=true]{background:var(--vscode-inputOption-activeBackground,#d6e8f2);color:var(--vscode-inputOption-activeForeground,inherit);font-weight:700}
+.navigation-pin[aria-pressed=true]{background:var(--vscode-inputOption-activeBackground,#d6e8f2);font-weight:700}
+.navigation-close,.navigation-pin{padding:4px 8px;font-size:12px}
+.navigation-find{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.navigation-find input{flex:1;min-width:0;width:100%;padding:7px;background:var(--vscode-input-background,#fff);color:var(--vscode-input-foreground,inherit);border:1px solid var(--vscode-input-border,#8884);border-radius:4px}
+.navigation-find kbd{font:11px var(--vscode-editor-font-family,monospace);opacity:.75;white-space:nowrap}
+.navigation-summary{display:block;font-size:12px;margin:2px 0 8px;color:var(--vscode-descriptionForeground,#586674)}
+.navigation-results{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding-right:2px}
+.navigation-result{display:block;width:100%;text-align:left;border:0;border-radius:4px;padding:6px 8px;margin:1px 0;min-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.navigation-result[data-level="2"]{padding-left:16px}
+.navigation-result[data-level="3"],.navigation-result[data-level="4"],.navigation-result[data-level="5"],.navigation-result[data-level="6"]{padding-left:26px;font-size:.95em}
+.navigation-result[aria-current=location],.navigation-current{background:var(--vscode-list-activeSelectionBackground,#cfe8f3);color:var(--vscode-list-activeSelectionForeground,#0b3d4f);font-weight:700}
+.navigation-empty{margin:8px;font-size:13px;color:var(--vscode-descriptionForeground,#586674)}
+.navigation-pagination{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:6px;font-size:12px}
+.navigation-pagination[hidden]{display:none}
+
+/* Floating chrome keeps recovery one click away without persistent rows. */
+.floating-chrome{position:fixed;top:8px;right:8px;z-index:70;background:var(--vscode-button-background,#2c6e5b);color:var(--vscode-button-foreground,#fff);border:1px solid var(--vscode-button-border,transparent);border-radius:5px;padding:6px 10px;box-shadow:0 4px 18px #0003;font-size:12px}
+.floating-chrome:hover{background:var(--vscode-button-hoverBackground,#24594a)}
+.floating-chrome[hidden]{display:none}
+
+/* Transient notifications never participate in document layout. */
+#notice{position:fixed;right:12px;bottom:12px;z-index:80;display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:min(430px,calc(100vw - 24px));pointer-events:none}
+#notice[hidden]{display:none}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;background:var(--vscode-notifications-background,#f5f7f8);color:var(--vscode-notifications-foreground,#26333d);border:1px solid var(--vscode-notifications-border,#c3ccd3);border-left:4px solid var(--vscode-notifications-border,#87929d);box-shadow:0 6px 24px #0003;font:13px/1.45 system-ui}
+.toast.success{border-left-color:var(--vscode-testing-iconPassed,#2e7d32)}
+.toast.error{border-left-color:var(--vscode-inputValidation-errorBorder,#c62828)}
+.toast .toast-message{flex:1;min-width:0;overflow-wrap:anywhere}
+.toast button{padding:3px 8px;font-size:12px}
+
+#conflicts:not(:empty){position:fixed;left:12px;bottom:12px;z-index:70;max-width:min(520px,calc(100vw - 24px));padding:10px 14px;background:var(--vscode-inputValidation-warningBackground,#fff3d2);color:var(--vscode-editor-foreground,#4e3f1d);border-left:3px solid var(--vscode-inputValidation-warningBorder,#c69737);border-radius:5px;box-shadow:0 6px 24px #0003;font:12px/1.5 system-ui}
+#conflicts button{margin:4px 4px 0 0;font-size:12px}
+
+dialog{max-width:460px;width:90%;max-height:90vh;overflow:auto;color:inherit;background:var(--vscode-editor-background,#fbfbfa);border:1px solid var(--vscode-widget-border,#ccc);border-radius:10px;padding:24px;box-sizing:border-box}
+dialog::backdrop{background:#0006}
+dialog label{display:block;margin:14px 0;font-size:13px}
+dialog input:not([type=checkbox]),dialog select{display:block;width:100%;font:inherit;padding:8px;margin-top:6px;background:var(--vscode-input-background,#fff);color:inherit;border:1px solid var(--vscode-widget-border,#ccc);border-radius:4px}
+dialog input[type=checkbox]{display:inline;width:auto;margin-right:6px}
+dialog button{margin:8px 8px 0 0}
+.dialog-text{white-space:pre-wrap;font-size:13px;line-height:1.7}
+.dialog-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+.dialog-row output{min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
+
+body.focus-mode #toolbar,body.focus-mode #navigation,body.focus-mode .show-toolbar{display:none}
+.vscode-high-contrast [class*=hljs-],.vscode-high-contrast-light [class*=hljs-]{color:var(--vscode-editor-foreground,var(--vscode-foreground,#fff))!important}
+.vscode-high-contrast button,.vscode-high-contrast-light button{border-color:var(--vscode-contrastBorder)!important}
+.vscode-high-contrast .hljs-keyword,.vscode-high-contrast-light .hljs-keyword{font-weight:700}
+.vscode-high-contrast .navigation-result[aria-current=location],.vscode-high-contrast-light .navigation-result[aria-current=location]{outline:2px solid var(--vscode-contrastActiveBorder,currentColor);color:var(--vscode-list-activeSelectionForeground,#fff)}
+.vscode-high-contrast .toast,.vscode-high-contrast-light .toast{background:var(--vscode-editor-background,#000);color:var(--vscode-editor-foreground,#fff);border-color:var(--vscode-contrastBorder,#fff)}
+.hljs-keyword,.hljs-selector-tag{color:#a626a4}
+.hljs-string,.hljs-attr{color:#4b8429}
+.hljs-number,.hljs-literal{color:#986801}
+.hljs-comment{color:#7b8793}
+.hljs-title,.hljs-function{color:#2875af}
+.vscode-dark .hljs-keyword{color:#c792ea}
+.vscode-dark .hljs-string{color:#addb67}
+.vscode-dark .hljs-title{color:#82aaff}
+
+@media(max-width:600px){
+  #toolbar{padding:5px 6px;gap:1px}
+  #toolbar .block-style{flex-basis:84px;min-width:64px;max-width:84px}
+  #document{padding:12px 20px 0}
+  #navigation{top:42px;left:0;right:0;bottom:auto;width:100%;max-width:100%;height:min(42vh,320px);border-radius:0 0 8px 8px}
+  #notice{right:8px;bottom:8px;max-width:calc(100vw - 16px)}
+  .toast{max-width:100%}
+}
+@media(max-width:380px){
+  #toolbar{padding:4px 4px;gap:1px}
+  #toolbar .block-style{flex-basis:76px;min-width:60px;max-width:76px;font-size:11px}
+  #toolbar>button{flex-basis:27px;width:27px;height:28px;padding:3px}
+  #document{padding-left:16px;padding-right:16px}
+}

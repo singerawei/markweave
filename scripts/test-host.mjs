@@ -1,0 +1,35 @@
+import { spawn } from 'node:child_process';
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, resolve, dirname,basename } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { existsSync,readdirSync } from 'node:fs';
+const executable = process.env.VSCODE_EXECUTABLE ?? (process.platform === 'win32' ? [join(process.env.LOCALAPPDATA??'','Programs','Microsoft VS Code','Code.exe'),join(process.env.ProgramFiles??'','Microsoft VS Code','Code.exe')].find(existsSync) : '/usr/share/code/code');
+if(!executable)throw new Error('Set VSCODE_EXECUTABLE to a local VS Code executable.');
+if (!existsSync(executable)) throw new Error('Set VSCODE_EXECUTABLE to a local VS Code executable.');
+const directory = await mkdtemp(join(tmpdir(),'markdownup-host-'));
+await mkdir(join(directory,'profile','User'),{recursive:true});
+await writeFile(join(directory,'profile','User','settings.json'),JSON.stringify({'telemetry.telemetryLevel':'off','update.mode':'none','extensions.autoCheckUpdates':false,'extensions.autoUpdate':false,'workbench.startupEditor':'none','security.workspace.trust.enabled':false}));
+const workspace = join(directory,'workspace'); await mkdir(workspace); await writeFile(join(workspace,'welcome.md'),'# MarkdownUP integration tests\n');
+const env = {...process.env}; delete env.ELECTRON_RUN_AS_NODE;
+env.MARKDOWNUP_REPORT_DIR = resolve('bench/results');
+let development = resolve('.');
+const vsix = process.argv[2];
+if (vsix) {
+  const base = dirname(executable);
+  const cli = [join(base,'resources','app','out','cli.js'),...readdirSync(base,{withFileTypes:true}).filter(entry => entry.isDirectory()).map(entry => join(base,entry.name,'resources','app','out','cli.js'))].find(existsSync);
+  if (!cli) throw new Error('Cannot locate the VS Code CLI entry point.');
+  execFileSync(executable,[cli,`--user-data-dir=${join(directory,'profile')}`,`--extensions-dir=${join(directory,'extensions')}`,'--install-extension',resolve(vsix)],{env:{...env,ELECTRON_RUN_AS_NODE:'1'},windowsHide:true,stdio:'inherit'});
+  development = join(directory,'probe'); await mkdir(development);
+  await writeFile(join(development,'package.json'),JSON.stringify({name:'markdownup-validation-probe',publisher:'test',version:'0.0.1',engines:{vscode:'*'}}));
+}
+const args = ['--no-sandbox',...(!vsix ? ['--disable-extensions'] : []),'--skip-welcome','--skip-release-notes','--disable-workspace-trust',`--user-data-dir=${join(directory,'profile')}`,`--extensions-dir=${join(directory,'extensions')}`,`--extensionDevelopmentPath=${development}`,`--extensionTestsPath=${resolve('dist/host-tests.cjs')}`,workspace];
+const child = spawn(executable,args,{windowsHide:true,env,stdio:'pipe'});
+child.stdout.on('data',data => process.stdout.write(data)); child.stderr.on('data',data => process.stderr.write(data));
+const timer = setTimeout(() => { child.kill(); },180000);
+const exit = await new Promise(resolve => child.on('exit',resolve)); clearTimeout(timer);
+child.stdout.destroy();child.stderr.destroy();child.unref();
+console.log(`VS Code host exit: ${exit}`);
+if(dirname(directory)!==resolve(tmpdir()) || !basename(directory).startsWith('markdownup-host-'))throw new Error('Unexpected cleanup path.');
+await Promise.race([rm(directory,{recursive:true,force:true,maxRetries:5,retryDelay:500}),new Promise(resolve=>setTimeout(resolve,10000))]);
+process.exit(exit===0?0:1);

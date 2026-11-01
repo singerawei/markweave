@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-11-01T07:10:14.711Z",
+  "scope": "In-memory SourceRepository using production TypeScript modules",
+  "knownConflictPartialSave": {
+    "writes": [
+      "file:///C:/review/MASTER.md"
+    ],
+    "saveError": "Error: Resolve the external conflict before saving: file:///C:/review/child.md",
+    "rootDisk": "Root edited\n\n@import \"./child.md\"\n",
+    "childDisk": "External child text\n",
+    "dirtySources": [
+      "file:///C:/review/child.md"
+    ]
+  }
+}

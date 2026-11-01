@@ -1,0 +1,14 @@
+node_modules/
+engine/
+dist/
+release/
+*.vsix
+bench/corpus/
+test-results/
+playwright-report/
+.vscode-test/
+.claude/
+.DS_Store
+Thumbs.db
+test_apply_patch.txt
+docs/review-artifacts/interaction/audit.json

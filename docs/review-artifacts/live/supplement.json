@@ -1,0 +1,315 @@
+{
+  "timestamp": "2026-11-01T07:35:11.960Z",
+  "scope": "Supplemental real VS Code webview interaction and cold/warm Mermaid queue test",
+  "diagrams": [
+    {
+      "mode": "cold",
+      "requestAt": 1793518517674,
+      "metrics": {
+        "readable": 340,
+        "editable": 402,
+        "diagram": 1382
+      },
+      "all20ReadyMs": 16512,
+      "final": {
+        "svg": 20,
+        "pending": 0,
+        "errors": []
+      },
+      "timeline": []
+    },
+    {
+      "mode": "cached",
+      "requestAt": 1793518534370,
+      "metrics": {
+        "readable": 219,
+        "editable": 251,
+        "diagram": 267
+      },
+      "all20ReadyMs": 413,
+      "final": {
+        "svg": 20,
+        "pending": 0,
+        "errors": []
+      },
+      "timeline": []
+    }
+  ],
+  "controls": [
+    {
+      "name": "real toolbar inventory",
+      "buttons": [
+        {
+          "label": "Bold",
+          "title": "Bold (Ctrl+B)",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Italic",
+          "title": "Italic (Ctrl+I)",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Strikethrough",
+          "title": "Strikethrough",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Code",
+          "title": "Code",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Paragraph",
+          "title": "Paragraph",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Heading 1",
+          "title": "Heading 1",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Heading 2",
+          "title": "Heading 2",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "List",
+          "title": "List",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Quote",
+          "title": "Quote",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Undo",
+          "title": "Undo (Ctrl+Z)",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Redo",
+          "title": "Redo (Ctrl+Shift+Z)",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Reveal source",
+          "title": "Reveal source",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Insert",
+          "title": "Insert",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Export PDF",
+          "title": "Export PDF",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Outline",
+          "title": "Outline",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Find",
+          "title": "Find (Ctrl+F)",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Fullscreen",
+          "title": "Fullscreen",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Zoom in",
+          "title": "Zoom in",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "Zoom out",
+          "title": "Zoom out",
+          "disabled": false,
+          "ariaKey": null
+        },
+        {
+          "label": "More",
+          "title": "More",
+          "disabled": false,
+          "ariaKey": null
+        }
+      ]
+    },
+    {
+      "name": "real code clipboard copy",
+      "notice": "",
+      "osClipboardMatchesExpected": false
+    },
+    {
+      "name": "real diagram Export SVG",
+      "downloadObserved": true,
+      "filename": "diagram.svg",
+      "notice": ""
+    },
+    {
+      "name": "real diagram Export PNG",
+      "downloadObserved": false,
+      "notice": ""
+    },
+    {
+      "name": "code editing highlight and Tab",
+      "staticTokens": 2,
+      "editingTokens": 0,
+      "before": "const value = 42;",
+      "after": "const value = 42;",
+      "active": {
+        "class": "segment",
+        "tag": "SECTION"
+      }
+    },
+    {
+      "name": "repeat formatting List",
+      "first": "<ul><li><p>Alpha <strong>bold</strong> and italic words.</p></li></ul>",
+      "second": "<ul><li><p>Alpha <strong>bold</strong> and italic words.</p></li></ul>",
+      "pressed": null
+    },
+    {
+      "name": "repeat formatting Quote",
+      "first": "<blockquote><p>Alpha <strong>bold</strong> and italic words.</p></blockquote>",
+      "second": "<blockquote><blockquote><p>Alpha <strong>bold</strong> and italic words.</p></blockquote></blockquote>",
+      "pressed": null
+    },
+    {
+      "name": "repeat formatting Heading 1",
+      "first": "<h1>Alpha <strong>bold</strong> and italic words.</h1>",
+      "second": "<h1>Alpha <strong>bold</strong> and italic words.</h1>",
+      "pressed": null
+    },
+    {
+      "name": "real shortcut Bold",
+      "html": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "dirty": [
+        []
+      ]
+    },
+    {
+      "name": "real shortcut Italic",
+      "html": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "dirty": [
+        []
+      ]
+    },
+    {
+      "name": "real shortcut Inline code",
+      "html": "<p>Alpha <strong>bold</strong> and italic words.</p>",
+      "dirty": [
+        []
+      ]
+    },
+    {
+      "name": "real Ctrl+Shift+S",
+      "dirty": [
+        []
+      ],
+      "diskContainsNewText": true,
+      "dialogCount": 1
+    },
+    {
+      "name": "real dialog Ctrl+Z",
+      "inputAfter": "Form value",
+      "sourceBefore": "Alpha bold and italic words.SAVE_AS_TESTUNDO_SOURCE",
+      "sourceAfter": "Alpha bold and italic words.SAVE_AS_TESTUNDO_SOURC"
+    },
+    {
+      "name": "real right click actions",
+      "labels": [
+        "File",
+        "Edit",
+        "Selection",
+        "View",
+        "Go",
+        "Run",
+        "Terminal",
+        "Help",
+        "MarkdownUP: Export PDF",
+        "CutCtrl+X",
+        "CopyCtrl+C",
+        "PasteCtrl+V"
+      ]
+    },
+    {
+      "name": "real theme Default Dark Modern",
+      "bodyClass": "vscode-dark",
+      "tokens": [
+        {
+          "color": "rgb(199, 146, 234)",
+          "background": "rgb(43, 43, 43)"
+        }
+      ],
+      "toolbar": {
+        "color": "rgb(204, 204, 204)",
+        "background": "rgb(31, 31, 31)"
+      }
+    },
+    {
+      "name": "real theme Default High Contrast",
+      "bodyClass": "vscode-high-contrast",
+      "tokens": [
+        {
+          "color": "rgb(166, 38, 164)",
+          "background": "rgb(0, 0, 0)"
+        }
+      ],
+      "toolbar": {
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(0, 0, 0)"
+      }
+    }
+  ],
+  "languages": [
+    {
+      "file": "cpp.md",
+      "raw": true,
+      "highlightTokens": 0,
+      "text": "Raw Markdown · Click to edit\n```cpp\n#include <vector>\nstd::vector<int> values;\n```\n",
+      "tools": []
+    },
+    {
+      "file": "protobuf.md",
+      "raw": false,
+      "highlightTokens": 0,
+      "text": "protobuf\nsyntax = \"proto3\";\nmessage User {\n  string name = 1;\n  int32 id = 2;\n}\n",
+      "tools": [
+        "Copy",
+        "Wrap lines"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "name": "Fullscreen actual bounds",
+      "error": "Error: locator.click: Error: strict mode violation: getByRole('button', { name: 'Fullscreen', exact: true }) resolved to 2 elements:\n    1) <button type=\"button\" title=\"Fullscreen\" aria-label=\"Fullscreen\">…</button> aka getByRole('navigation', { name: 'Formatting toolbar' }).getByRole('button', { name: 'Fullscreen' })\n    2) <button type=\"button\" title=\"Fullscreen\" aria-label=\"Fullscreen\">…</button> aka getByRole('main', { name: 'Markdown document' }).getByRole('button', { name: 'Fullscreen' })\n\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Fullscreen', exact: true })\u001b[22m\n"
+    }
+  ]
+}

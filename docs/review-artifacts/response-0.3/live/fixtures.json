@@ -1,0 +1,54 @@
+{
+  "single-1MB.md": {
+    "bytes": 1048693,
+    "sha256": "f13a52841424ce95c818b80198fd4bcdc1c1f843a05a6a114d6d3ad4e728170e"
+  },
+  "single-5MB.md": {
+    "bytes": 5243059,
+    "sha256": "f974eaa814a7c41ddaa5ce2bb535942da3c1bb40a75b72168e1b18be0d97aded"
+  },
+  "includes-100.md": {
+    "bytes": 3303,
+    "sha256": "5601c9629c8d2281a1970832512663a605379bab600eff957ad84001157ad855"
+  },
+  "includes-500.md": {
+    "bytes": 16903,
+    "sha256": "eeefe7f246c7ab939412019cacfd1263482b518f01f6641480051897f7ff720a"
+  },
+  "mermaid-20.md": {
+    "bytes": 1879,
+    "sha256": "7a8f752be3ca2adeb7bf8d992d4a1cd9460eb262f35cd3c96e29bf138c8795b9"
+  },
+  "mermaid-complex.md": {
+    "bytes": 7210,
+    "sha256": "c0c8c30ecf09869e7451b5031d86ce7c96636c6f6ed588ff7a43c73aaef22a99"
+  },
+  "mixed-5MB-100-diagrams.md": {
+    "bytes": 5264269,
+    "sha256": "4e471f9e2987827dd166387aa497cd1e6a9715dee0c8d3d61cd9f9f4081155c4"
+  },
+  "code-102400.md": {
+    "bytes": 102474,
+    "sha256": "5fa1164121476e99a32100c883d5c55ccc09991d1d59e5273ce9fcda8ada486f"
+  },
+  "code-1048576.md": {
+    "bytes": 1048606,
+    "sha256": "8a50c074882583492a41e584e63a86628a39cecc94751f192f991988a07346e0"
+  },
+  "paragraph-100KB.md": {
+    "bytes": 128020,
+    "sha256": "d3a6de1af2b7ccdabc5fef6cfcafbfeaa0c6bbf0844d8222615c5c33c14bdac6"
+  },
+  "table-1000rows.md": {
+    "bytes": 34829,
+    "sha256": "544eab0607f6e7c0ec30fd823dee8b565c255b3c648419d8b20239fcdf21131b"
+  },
+  "ui.md": {
+    "bytes": 221,
+    "sha256": "1b59d9d5fc7c5375e4f26d0693ef6863d9e3f34658c015acf17bec9679156937"
+  },
+  "cpp.md": {
+    "bytes": 61,
+    "sha256": "344e6e00dbff61b9482ee28ddaf695f85cb28b2484ca106d90883d99dba4cc22"
+  }
+}

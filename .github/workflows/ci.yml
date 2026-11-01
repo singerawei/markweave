@@ -1,0 +1,74 @@
+name: Validate and package
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - name: Install Chromium headless shell for VSIX packaging
+        if: runner.os == 'Windows'
+        run: npx playwright install chromium-headless-shell
+      - run: npm run test:ui
+      - run: npm run bench
+      - run: npm run package
+        if: runner.os == 'Windows'
+      - name: Prepare isolated VS Code executable
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $editorDirectory = Join-Path $env:RUNNER_TEMP 'markdownup-vscode'
+          $editorArchive = Join-Path $env:RUNNER_TEMP 'markdownup-vscode.zip'
+          Invoke-WebRequest 'https://update.code.visualstudio.com/latest/win32-x64-archive/stable' -OutFile $editorArchive
+          Expand-Archive -LiteralPath $editorArchive -DestinationPath $editorDirectory
+          "VSCODE_EXECUTABLE=$(Join-Path $editorDirectory 'Code.exe')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - run: npm run test:host
+        if: runner.os == 'Windows'
+      - run: node scripts/test-host.mjs markdownup-win32-x64-0.3.0.vsix
+        if: runner.os == 'Windows'
+      - run: npm run release:gate
+        if: runner.os == 'Windows' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: markdownup-${{ matrix.os }}
+          path: |
+            *.vsix
+            bench/results/
+            docs/review-artifacts/response-0.3/
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: markdownup-windows-latest
+          path: artifacts
+      - name: Attach VSIX to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            gh release create "$RELEASE_TAG" artifacts/*.vsix --generate-notes --prerelease --title "MarkdownUP $RELEASE_TAG"
+          else
+            gh release create "$RELEASE_TAG" artifacts/*.vsix --generate-notes --title "MarkdownUP $RELEASE_TAG"
+          fi

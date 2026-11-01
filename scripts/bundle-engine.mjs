@@ -1,0 +1,11 @@
+import { chromium } from 'playwright-core';
+import { dirname,join,resolve } from 'node:path';
+import { cp,mkdir,readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+const full=chromium.executablePath();
+const parent=dirname(dirname(dirname(full)));
+const {readdir}=await import('node:fs/promises');
+const revision=JSON.parse(await readFile('node_modules/playwright-core/browsers.json','utf8')).browsers.find(browser=>browser.name==='chromium-headless-shell').revision;
+const shell=(await readdir(parent)).filter(name=>name===`chromium_headless_shell-${revision}`).map(name=>join(parent,name,'chrome-headless-shell-win64')).find(path=>existsSync(join(path,'chrome-headless-shell.exe')));
+if(!shell)throw new Error('Run npx playwright install chromium-headless-shell before packaging.');
+await mkdir('engine',{recursive:true});await cp(shell,resolve('engine'),{recursive:true});

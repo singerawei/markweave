@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-11-01T07:10:04.372Z",
+  "scope": "Production webview in bundled headless Chromium, recorded host messages; no live VS Code integration",
+  "observations": {
+    "arrowDownAcrossParagraphs": [
+      "First paragraph.Q",
+      "Second paragraph.\n"
+    ],
+    "selectAll": "First paragraph.Q",
+    "backspaceAtSecondParagraph": [
+      "First paragraph.Q\n",
+      "Second paragraph."
+    ],
+    "saveStatus": {
+      "text": "1 unsaved files",
+      "width": 1,
+      "height": 1,
+      "clipPath": "inset(50%)"
+    },
+    "outlineEntries": [
+      "Title"
+    ],
+    "findRemainsOpenAfterEscape": true,
+    "findJump": {
+      "markedText": 0,
+      "activeElement": "segment",
+      "selection": ""
+    },
+    "anchorMessages": [
+      {
+        "type": "link",
+        "href": "#title",
+        "uri": "file:///C:/review/MASTER.md"
+      }
+    ],
+    "narrowNavigation": {
+      "panelWidth": 270,
+      "viewportWidth": 400,
+      "overlay": "fixed"
+    },
+    "readOnlyDiagramEdit": {
+      "editsSent": 1,
+      "nodeLabels": [
+        "Changed",
+        "B"
+      ]
+    },
+    "pageErrors": []
+  }
+}

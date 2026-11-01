@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-11-01T14:48:52.870Z",
+  "vscode": "1.123.0",
+  "scope": "Real VS Code webview; synthetic browser insertText and frame-to-frame scroll samples; timings start at CustomDocument creation, exclude VS Code application launch.",
+  "results": [
+    {
+      "case": "B-1MB.md",
+      "readableMs": 330,
+      "editableMs": 880,
+      "saveMs": 24,
+      "inputP95Ms": 19.5,
+      "scrollP95Ms": 24.700000002980232,
+      "maxLongTaskMs": 0
+    },
+    {
+      "case": "C-5MB.md",
+      "readableMs": 217,
+      "editableMs": 1970,
+      "saveMs": 120,
+      "inputP95Ms": 19.200000002980232,
+      "scrollP95Ms": 47.29999999701977,
+      "maxLongTaskMs": 0
+    },
+    {
+      "case": "D-100-includes/MASTER.md",
+      "readableMs": 256,
+      "editableMs": 1671,
+      "saveMs": 16,
+      "inputP95Ms": 23.400000005960464,
+      "scrollP95Ms": 52.400000005960464,
+      "maxLongTaskMs": 0
+    },
+    {
+      "case": "M-1MB-20-diagrams.md",
+      "readableMs": 259,
+      "editableMs": 622,
+      "diagramMs": 1696,
+      "saveMs": 16,
+      "inputP95Ms": 16.899999991059303,
+      "scrollP95Ms": 22.599999994039536,
+      "maxLongTaskMs": 0
+    },
+    {
+      "case": "M-5MB-100-diagrams.md",
+      "readableMs": 213,
+      "editableMs": 1849,
+      "diagramMs": 1883,
+      "saveMs": 109,
+      "inputP95Ms": 21.5,
+      "scrollP95Ms": 57,
+      "maxLongTaskMs": 0
+    },
+    {
+      "case": "M-composite/MASTER.md",
+      "readableMs": 249,
+      "editableMs": 1870,
+      "diagramMs": 280,
+      "saveMs": 14,
+      "inputP95Ms": 23.099999994039536,
+      "scrollP95Ms": 56.6000000089407,
+      "maxLongTaskMs": 0
+    }
+  ]
+}
