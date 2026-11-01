@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import assert from 'node:assert/strict';
-import { mkdtemp,writeFile,readFile,rm } from 'node:fs/promises';
+import { mkdtemp,writeFile,readFile,rm,realpath } from 'node:fs/promises';
 import { join } from 'node:path';
 import { EditorProvider } from '../../src/extension/editorProvider';
 import { generate } from '../../bench/generator';
@@ -8,7 +8,7 @@ import { CompositeDocument } from '../../src/extension/compositeDocument';
 import{serializeSource}from'../../src/document/serializer';
 
 export async function run() {
-  const directory = await mkdtemp(join(vscode.workspace.workspaceFolders![0].uri.fsPath,'fixture-'));
+  const directory = await realpath(await mkdtemp(join(vscode.workspace.workspaceFolders![0].uri.fsPath,'fixture-')));
   const extension = vscode.extensions.getExtension('markdownup.markdownup')!;
   await extension.activate();
   const provider = extension.exports.provider as EditorProvider;

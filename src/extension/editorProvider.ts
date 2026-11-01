@@ -257,7 +257,14 @@ export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocu
   }
   async saveCustomDocumentAs(document: CompositeDocument, destination: vscode.Uri) {
     // Relative directives are meaningful only in the original directory.
-    if (dirname(destination.fsPath) !== dirname(document.uri.fsPath)) throw new Error('Save As must stay in the same folder so relative imports remain valid.');
+    // Windows may hand us different casing or an 8.3 short path for the same
+    // folder, so compare canonical directories instead of raw strings.
+    const destinationDirectory = await realpath(dirname(destination.fsPath)).catch(() => dirname(destination.fsPath));
+    const currentDirectory = dirname(document.uri.fsPath);
+    const sameDirectory = process.platform === 'win32'
+      ? destinationDirectory.toLowerCase() === currentDirectory.toLowerCase()
+      : destinationDirectory === currentDirectory;
+    if (!sameDirectory) throw new Error('Save As must stay in the same folder so relative imports remain valid.');
     await this.enqueue(async () => {
       if([...document.dirtySources].some(uri=>uri!==document.rootUri))throw new Error('Save or discard included-file edits before Save As. Original files have not been written.');
       const root = document.repository.sources.get(document.rootUri)!;

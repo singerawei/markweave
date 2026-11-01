@@ -12,6 +12,7 @@
 - Clipboard success is reported only after the operating system clipboard readback confirms the text.
 - Navigation indexing no longer re-renders every mounted segment on theme/body class changes.
 - Mermaid renderer prewarms while the document is being indexed.
+- Save As compares canonical directories on Windows, so drive-letter casing and 8.3 short paths no longer produce a false "different folder" error.
 
 ## Install
 
@@ -26,7 +27,7 @@ Requirements: **Windows x64**, **VS Code 1.100.0+**. The VSIX is about 125 MB be
 - `npm run check`: lint, typecheck, 67 Node tests and production build passed.
 - `npm run test:ui`: 23 Playwright UI tests passed.
 - Installed-VSIX host suite passed (save, undo/redo, backup/restore, commands, preferences, 20/20 OS clipboard readbacks).
-- Asset SHA-256: `3c095047ca85e875d32b029d1a2aeee996d4de97185cfe1d68a0b19e8fb6f5b8`.
+- Asset SHA-256: `ceb1cbe29c24ee45356b510741aea0a2174818c1cf0beab9b5743941dede818c`.
 
 ## Known limitations
 
