@@ -2,6 +2,7 @@
 
 ## 1.0.0
 
+- Add `\(...\)` and `\[...\]` math delimiters, nested emphasis inside highlight/sub/superscript, Markdown parsed inside block `<details>`, and foldable `[!NOTE]-` / `[!TIP]+` callouts.
 - Add GFM autolinks, cross-block reference links, footnotes, GitHub Alerts/Obsidian Callouts, admonitions, definition lists, TOC, abbreviations and Obsidian comments.
 - Add KaTeX MathML rendering for inline/block math, fully editable highlight and sub/superscript marks, emoji shortcodes, Wiki links/embeds and clickable internal anchors.
 - Add safe HTML allowlist rendering (kbd/mark/details/summary/etc.), frontmatter metadata cards, immediate remote image loading and PDF remote-image embedding.

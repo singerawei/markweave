@@ -28,16 +28,30 @@ test('footnotes, alerts, admonitions and definition lists render', () => {
   const alert = md.render('> [!WARNING] Custom title\n> Careful.\n');
   assert.match(alert, /md-alert-warning/);
   assert.match(alert, /data-title="Custom title"/);
+  assert.match(md.render('> [!NOTE]-\n> folded\n'), /<details class="md-alert[^"]*"><summary>Note<\/summary>/);
+  assert.match(md.render('> [!TIP]+\n> open\n'), /<details class="md-alert[^"]*" open><summary>Tip<\/summary>/);
   assert.match(md.render('!!! tip "Hint"\n    Body\n'), /admonition-tip/);
   assert.match(md.render('Term\n: Definition\n'), /<dl>[\s\S]*<dt>Term<\/dt>[\s\S]*<dd>Definition<\/dd>/);
+});
+
+test('details blocks keep Markdown inside them', () => {
+  const html = md.render('<details>\n<summary>More</summary>\n\n**bold** content\n\n</details>');
+  assert.match(html, /<details><summary>More<\/summary>/);
+  assert.match(html, /<strong>bold<\/strong>/);
+  assert.match(html, /<\/details>/);
+  assert.ok(html.indexOf('<strong>bold</strong>') < html.indexOf('</details>'));
 });
 
 test('math, highlight, sub/sup, emoji and TOC render', () => {
   assert.match(md.render('$e^{i\\pi}+1=0$'), /<math/);
   assert.match(md.render('$$\nx^2\n$$'), /math-block/);
+  assert.match(md.render('\\(x^2\\)'), /<math/);
+  assert.match(md.render('\\[\nx^2\n\\]'), /math-block/);
+  assert.match(md.render('==**bold**=='), /<mark><strong>bold<\/strong><\/mark>/);
   assert.match(md.render('==highlight== H~2~O x^2^ :smile:'), /<mark>highlight<\/mark>/);
   assert.match(md.render('H~2~O'), /H<sub>2<\/sub>O/);
   assert.match(md.render('x^2^'), /x<sup>2<\/sup>/);
+  assert.match(md.render('H~**2**~O'), /H<sub><strong>2<\/strong><\/sub>O/);
   assert.match(md.render(':rocket:'), /🚀/);
   const toc = tocFromSegments([{id: 'a', text: '# One\n'}, {id: 'b', text: '## Two\n'}]);
   const rendered = md.render('[TOC]', {toc} as MarkdownEnv);

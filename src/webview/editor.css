@@ -149,6 +149,12 @@ dd{margin:0 0 8px 24px}
 .math-error{color:var(--vscode-errorForeground,#c62828)}
 .md-alert{margin:12px 0;padding:10px 14px;border-left:4px solid var(--vscode-textLink-foreground,#2f6fb3);background:var(--vscode-textBlockQuote-background,#f2f7fc);border-radius:5px}
 .md-alert::before{content:attr(data-title);display:block;font-weight:700;margin-bottom:4px}
+details.md-alert{padding:10px 14px}
+details.md-alert::before{content:none}
+details.md-alert>summary{cursor:pointer;font-weight:700;list-style:none}
+details.md-alert>summary::-webkit-details-marker{display:none}
+details.md-alert>summary::before{content:'▸ ';display:inline-block}
+details.md-alert[open]>summary::before{content:'▾ '}
 .md-alert-warning,.md-alert-caution{border-left-color:var(--vscode-editorWarning-foreground,#c77700);background:color-mix(in srgb,var(--vscode-editorWarning-foreground,#c77700) 8%,transparent)}
 .md-alert-important{border-left-color:#8a3ffc}.md-alert-tip,.md-alert-success{border-left-color:var(--vscode-testing-iconPassed,#2e7d32)}.md-alert-danger,.md-alert-bug{border-left-color:var(--vscode-errorForeground,#c62828)}
 .admonition{margin:12px 0;padding:10px 14px;border:1px solid var(--vscode-widget-border,#ccd5df);border-radius:6px;background:var(--vscode-textBlockQuote-background,#f7f9fb)}

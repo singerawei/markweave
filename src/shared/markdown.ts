@@ -98,6 +98,64 @@ function titleCase(value: string) {
   return value.slice(0, 1).toUpperCase() + value.slice(1).toLowerCase();
 }
 
+function mathParenInline(state: any, silent: boolean) {
+  const start = state.pos;
+  if (!state.src.startsWith('\\(', start)) return false;
+  if (start > 0 && state.src[start - 1] === '\\') return false;
+  let end = start + 2;
+  while (end < state.src.length) {
+    if (state.src.startsWith('\\)', end)) break;
+    if (state.src[end] === '\n') return false;
+    end++;
+  }
+  if (end >= state.src.length) return false;
+  const content = state.src.slice(start + 2, end).trim();
+  if (!content) return false;
+  if (silent) return true;
+  const token = state.push('math_inline', 'math', 0);
+  token.content = content;
+  token.markup = '\\(';
+  state.pos = end + 2;
+  return true;
+}
+
+function mathBracketBlock(state: any, startLine: number, endLine: number, silent: boolean) {
+  const lineText = (line: number) => state.src.slice(state.bMarks[line] + state.tShift[line], state.eMarks[line]);
+  const first = lineText(startLine).trim();
+  if (!first.startsWith('\\[')) return false;
+  const lines: string[] = [];
+  let nextLine = startLine + 1;
+  const sameLine = first.indexOf('\\]');
+  if (sameLine >= 0) {
+    lines.push(first.slice(2, sameLine));
+  } else {
+    const initial = first.slice(2).trim();
+    if (initial) lines.push(initial);
+    let found = false;
+    for (let line = startLine + 1; line < endLine; line++) {
+      const text = lineText(line);
+      const close = text.indexOf('\\]');
+      if (close >= 0) {
+        if (text.slice(0, close).trim()) lines.push(text.slice(0, close));
+        found = true;
+        nextLine = line + 1;
+        break;
+      }
+      lines.push(text);
+    }
+    if (!found) return false;
+  }
+  const content = lines.join('\n').trim();
+  if (!content) return false;
+  if (silent) return true;
+  const token = state.push('math_block', 'math', 0);
+  token.content = content;
+  token.markup = '\\[';
+  token.map = [startLine, nextLine];
+  state.line = nextLine;
+  return true;
+}
+
 function mathInline(state: any, silent: boolean) {
   const start = state.pos;
   if (state.src.charCodeAt(start) !== 0x24 || state.src.charCodeAt(start + 1) === 0x24) return false;
@@ -174,10 +232,12 @@ function pairRule(openType: string, closeType: string, marker: string, rejectDou
     if (rejectDouble && state.src.slice(end, end + rejectDouble.length) === rejectDouble) return false;
     if (silent) return true;
     const content = state.src.slice(start + marker.length, end);
-    state.push(openType, marker === '==' ? 'mark' : marker === '^' ? 'sup' : 'sub', 1);
-    const text = state.push('text', '', 0);
-    text.content = content;
-    state.push(closeType, marker === '==' ? 'mark' : marker === '^' ? 'sup' : 'sub', -1);
+    const tag = marker === '==' ? 'mark' : marker === '^' ? 'sup' : 'sub';
+    state.push(openType, tag, 1);
+    const inner: any[] = [];
+    state.md.inline.parse(content, state.md, state.env, inner);
+    state.tokens.push(...inner);
+    state.push(closeType, tag, -1);
     state.pos = end + marker.length;
     return true;
   };
@@ -277,6 +337,30 @@ function abbreviationRule(state: any) {
   }
 }
 
+function detailsBlock(state: any, startLine: number, endLine: number, silent: boolean) {
+  const lineText = (line: number) => state.src.slice(state.bMarks[line] + state.tShift[line], state.eMarks[line]);
+  const first = lineText(startLine).trim();
+  if (!/^<details(?:\s[^>]*)?>/i.test(first)) return false;
+  const startOffset = state.bMarks[startLine] + state.tShift[startLine];
+  const closeOffset = state.src.indexOf('</details>', startOffset);
+  if (closeOffset < 0) return false;
+  let nextLine = startLine;
+  while (nextLine < endLine && state.eMarks[nextLine] < closeOffset + 10) nextLine++;
+  if (nextLine < endLine) nextLine++;
+  const raw = state.src.slice(startOffset, closeOffset + '</details>'.length);
+  if (silent) return true;
+  const inner = raw.replace(/^<details[^>]*>/i, '').replace(/<\/details>\s*$/i, '');
+  const summaryMatch = /<summary[^>]*>([\s\S]*?)<\/summary>/i.exec(inner);
+  const summary = summaryMatch ? state.md.renderInline(summaryMatch[1]) : 'Details';
+  const body = summaryMatch ? inner.replace(summaryMatch[0], '') : inner;
+  const token = state.push('details_block', 'details', 0);
+  token.content = state.md.render(body.trim(), state.env);
+  token.meta = {summary, open: /^<details[^>]*\bopen\b/i.test(raw)};
+  token.map = [startLine, nextLine];
+  state.line = nextLine;
+  return true;
+}
+
 function admonitionBlock(state: any, startLine: number, endLine: number, silent: boolean) {
   const lineText = (line: number) => state.src.slice(state.bMarks[line] + state.tShift[line], state.eMarks[line]);
   const match = /^!!!\s+([A-Za-z][\w-]*)(?:\s+"([^"]*)")?\s*$/.exec(lineText(startLine));
@@ -356,10 +440,23 @@ function alertRule(state: any) {
     const type = match[1].toLowerCase();
     const custom = (match[3] ?? '').trim();
     const consumed = match[0].length;
+    const title = custom || titleCase(type);
     open.attrSet('class', `md-alert md-alert-${type}`);
-    open.attrSet('data-title', custom || titleCase(type));
+    open.attrSet('data-title', title);
     open.attrSet('data-alert-type', type);
-    if (match[2]) open.attrSet('data-fold', match[2]);
+    if (match[2]) {
+      open.attrSet('data-fold', match[2]);
+      open.type = 'alert_fold_open';
+      open.tag = 'details';
+      let depth = 0;
+      for (let cursor = index; cursor < tokens.length; cursor++) {
+        if (tokens[cursor].type === 'blockquote_open' || tokens[cursor].type === 'alert_fold_open') depth++;
+        else if (tokens[cursor].type === 'blockquote_close' || tokens[cursor].type === 'alert_fold_close') {
+          depth--;
+          if (depth === 0) { tokens[cursor].type = 'alert_fold_close'; tokens[cursor].tag = 'details'; break; }
+        }
+      }
+    }
     inline.content = inline.content.slice(consumed).replace(/^\r?\n/, '');
     const first = inline.children?.[0];
     if (first?.type === 'text') first.content = first.content.slice(consumed).replace(/^\r?\n/, '');
@@ -371,6 +468,7 @@ export function markdownTokenizer(html = false) {
   md.use(deflist);
   md.use(emoji);
 
+  md.inline.ruler.before('escape', 'md_math_paren', mathParenInline);
   md.inline.ruler.before('emphasis', 'md_math_inline', mathInline);
   md.inline.ruler.before('emphasis', 'md_mark', pairRule('mark_open', 'mark_close', '=='));
   md.inline.ruler.before('emphasis', 'md_sub', pairRule('sub_open', 'sub_close', '~', '~~'));
@@ -380,7 +478,9 @@ export function markdownTokenizer(html = false) {
   md.inline.ruler.before('emphasis', 'md_comment_inline', commentInline);
 
   md.block.ruler.before('fence', 'md_math_block', mathBlock, {alt: ['paragraph', 'reference', 'blockquote', 'list']});
+  md.block.ruler.before('fence', 'md_math_bracket_block', mathBracketBlock, {alt: ['paragraph', 'reference', 'blockquote', 'list']});
   md.block.ruler.before('reference', 'md_footnote_definition', footnoteDefinition, {alt: ['paragraph', 'reference']});
+  md.block.ruler.before('html_block', 'md_details', detailsBlock, {alt: ['paragraph']});
   md.block.ruler.before('paragraph', 'md_toc', tocBlock, {alt: ['paragraph']});
   md.block.ruler.before('paragraph', 'md_abbreviation', abbreviationBlock, {alt: ['paragraph']});
   md.block.ruler.before('paragraph', 'md_admonition', admonitionBlock, {alt: ['paragraph']});
@@ -427,6 +527,10 @@ export function markdownTokenizer(html = false) {
     return `<span class="md-embed" data-wikilink="${escapeHtml(String(meta.target ?? ''))}" title="Click to open ${escapeHtml(String(meta.target ?? ''))}">${escapeHtml(String(meta.label ?? meta.target ?? ''))}</span>`;
   };
   rules.abbr_inline = (tokens, index) => `<abbr title="${escapeHtml(String(tokens[index].meta?.title ?? ''))}">${escapeHtml(tokens[index].content)}</abbr>`;
+  rules.details_block = (tokens, index) => {
+    const token = tokens[index];
+    return `<details${token.meta?.open ? ' open' : ''}><summary>${token.meta?.summary ?? 'Details'}</summary>${token.content}</details>\n`;
+  };
   rules.comment_inline = () => '<span class="md-comment" title="Hidden comment" aria-label="Hidden comment"></span>';
   rules.comment_block = () => '<div class="md-comment-block" title="Hidden comment" aria-label="Hidden comment"></div>\n';
   rules.admonition = (tokens, index) => {
@@ -444,6 +548,13 @@ export function markdownTokenizer(html = false) {
     }
     return defaultBlockquote ? defaultBlockquote(tokens, index, options, env, self) : '<blockquote>\n';
   };
+  rules.alert_fold_open = (tokens, index) => {
+    const title = String(tokens[index].attrGet('data-title') ?? 'Details');
+    const cls = String(tokens[index].attrGet('class') ?? 'md-alert');
+    const open = tokens[index].attrGet('data-fold') === '+' ? ' open' : '';
+    return `<details class="${escapeHtml(cls)}"${open}><summary>${escapeHtml(title)}</summary>\n`;
+  };
+  rules.alert_fold_close = () => '</details>\n';
 
   rules.html_block = (tokens, index) => sanitizeHtml(tokens[index].content, SAFE_HTML);
   rules.html_inline = (tokens, index) => sanitizeInlineTag(tokens[index].content);

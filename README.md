@@ -30,9 +30,11 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 | 脚注 `[^1]` / `[^1]: ...` | ✅ 富渲染，源码编辑 |
 | GitHub Alerts / Obsidian Callouts `> [!NOTE]` | ✅ 富渲染，支持自定义标题 |
 | Admonitions `!!! note "Title"` | ✅ 富渲染，源码编辑 |
-| 数学 `$...$`、`$$...$$` | ✅ KaTeX MathML 渲染，源码编辑 |
+| 数学 `$...$`、`$$...$$`、`\(...\)`、`\[...\]` | ✅ KaTeX MathML 渲染，源码编辑 |
 | 定义列表、缩写、`[TOC]` | ✅ 富渲染，源码编辑 |
-| `==高亮==`、`H~2~O`、`x^2^` | ✅ 可编辑 |
+| `==高亮==`、`H~2~O`、`x^2^`（内部可嵌套强调） | ✅ 可编辑 |
+| 折叠 Callout `[!NOTE]-` / `[!TIP]+` | ✅ 可折叠 details |
+| `<details>` + Markdown 内容 | ✅ 内容按 Markdown 渲染并安全保留 |
 | Emoji `:smile:` | ✅ 富渲染，源码编辑 |
 | Wikilink `[[Page]]`、嵌入 `![[Page]]` | ✅ 可点击打开；嵌入以卡片呈现，不做全文转嵌 |
 | Obsidian 注释 `%%...%%` | ✅ 内容隐藏，仅保留定位标记 |
@@ -169,7 +171,7 @@ docs           使用说明、快捷键审计与验收记录
 
 ```sh
 npm ci
-npm run check        # lint + typecheck + 75 项核心/扩展测试 + build
+npm run check        # lint + typecheck + 76 项核心/扩展测试 + build
 npx playwright install chromium
 npm run test:ui      # 24 项 UI 测试
 npm run test:host    # 真实 VS Code 宿主测试
