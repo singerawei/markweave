@@ -14,7 +14,7 @@ export interface PdfOptions {format:'A4'|'A3'|'Letter';landscape:boolean;margin:
 const escape = (text:string) => text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 export async function exportPdf(document:CompositeDocument,extensionPath:string,options:PdfOptions) {
   if (!['A4','A3','Letter'].includes(options.format) || !Number.isFinite(options.margin) || options.margin<0 || options.margin>60 || !Number.isFinite(options.fontSize) || options.fontSize<8 || options.fontSize>32) throw new Error('Invalid PDF settings.');
-  const destination = options.preview ? vscode.Uri.file(join(await mkdtemp(join(tmpdir(),'markdownup-pdf-')),'preview.pdf')) : await vscode.window.showSaveDialog({defaultUri:document.uri.with({path:document.uri.path.replace(/\.md$/i,'.pdf')}),filters:{PDF:['pdf']}});
+  const destination = options.preview ? vscode.Uri.file(join(await mkdtemp(join(tmpdir(),'markweave-pdf-')),'preview.pdf')) : await vscode.window.showSaveDialog({defaultUri:document.uri.with({path:document.uri.path.replace(/\.md$/i,'.pdf')}),filters:{PDF:['pdf']}});
   if (!destination) return;
   if(!destination.fsPath.toLowerCase().endsWith('.pdf'))throw new Error('The export destination must be a .pdf file.');
   // Snapshot the complete composition, including unsaved blocks, before launching Chromium.

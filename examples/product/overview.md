@@ -1,6 +1,6 @@
 ## 产品概览
 
-**MarkdownUP** 让你直接编辑整篇文档，保持本地文件和 Git 工作流。
+**MarkWeave** 让你直接编辑整篇文档，保持本地文件和 Git 工作流。
 
 - [x] 本地 Markdown
 - [x] 可编辑的 Include

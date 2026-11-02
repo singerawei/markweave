@@ -1,4 +1,4 @@
 {
   "version":"0.2.0",
-  "configurations":[{"name":"Run MarkdownUP","type":"extensionHost","request":"launch","args":["--extensionDevelopmentPath=${workspaceFolder}","${workspaceFolder}/examples"],"outFiles":["${workspaceFolder}/dist/**/*.js"],"preLaunchTask":"npm: build"}]
+  "configurations":[{"name":"Run MarkWeave","type":"extensionHost","request":"launch","args":["--extensionDevelopmentPath=${workspaceFolder}","${workspaceFolder}/examples"],"outFiles":["${workspaceFolder}/dist/**/*.js"],"preLaunchTask":"npm: build"}]
 }

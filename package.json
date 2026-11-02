@@ -1,8 +1,9 @@
 {
-  "name": "markdownup",
-  "version": "1.0.0",
-  "displayName": "MarkdownUP — Modular Markdown Editor",
-  "publisher": "markdownup",
+  "name": "markweave",
+  "version": "2.0.0",
+  "displayName": "MarkWeave — Modular Markdown Editor",
+  "publisher": "markweave",
+  "icon": "media/markweave-icon.png",
   "engines": {
     "vscode": "^1.100.0"
   },
@@ -10,13 +11,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onCustomEditor:markdownup.editor"
+    "onCustomEditor:markweave.editor"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "customEditors": [
       {
-        "viewType": "markdownup.editor",
+        "viewType": "markweave.editor",
         "displayName": "Modular Markdown Editor",
         "selector": [
           {
@@ -31,183 +32,183 @@
     ],
     "commands": [
       {
-        "command": "markdownup.open",
-        "title": "MarkdownUP: Open WYSIWYG Editor"
+        "command": "markweave.open",
+        "title": "MarkWeave: Open WYSIWYG Editor"
       },
       {
-        "command": "markdownup.save",
-        "title": "MarkdownUP: Save",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.save",
+        "title": "MarkWeave: Save",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.saveAs",
-        "title": "MarkdownUP: Save As",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.saveAs",
+        "title": "MarkWeave: Save As",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.exportPdf",
-        "title": "MarkdownUP: Export PDF"
+        "command": "markweave.exportPdf",
+        "title": "MarkWeave: Export PDF"
       },
       {
-        "command": "markdownup.bold",
-        "title": "MarkdownUP: Bold",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.bold",
+        "title": "MarkWeave: Bold",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.italic",
-        "title": "MarkdownUP: Italic",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.italic",
+        "title": "MarkWeave: Italic",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.inlineCode",
-        "title": "MarkdownUP: Inline Code",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.inlineCode",
+        "title": "MarkWeave: Inline Code",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.undo",
-        "title": "MarkdownUP: Undo",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.undo",
+        "title": "MarkWeave: Undo",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.redo",
-        "title": "MarkdownUP: Redo",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.redo",
+        "title": "MarkWeave: Redo",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.find",
-        "title": "MarkdownUP: Find in Document",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.find",
+        "title": "MarkWeave: Find in Document",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.outline",
-        "title": "MarkdownUP: Document Outline",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.outline",
+        "title": "MarkWeave: Document Outline",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.navigate",
-        "title": "MarkdownUP: Navigate",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.navigate",
+        "title": "MarkWeave: Navigate",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.pinNavigation",
-        "title": "MarkdownUP: Pin Navigation",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.pinNavigation",
+        "title": "MarkWeave: Pin Navigation",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.toggleToolbar",
-        "title": "MarkdownUP: Toggle Toolbar",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.toggleToolbar",
+        "title": "MarkWeave: Toggle Toolbar",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.focusMode",
-        "title": "MarkdownUP: Focus Mode",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.focusMode",
+        "title": "MarkWeave: Focus Mode",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.help",
-        "title": "MarkdownUP: Help",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.help",
+        "title": "MarkWeave: Help",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.manageIncludes",
-        "title": "MarkdownUP: Manage Includes",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.manageIncludes",
+        "title": "MarkWeave: Manage Includes",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.revealSource",
-        "title": "MarkdownUP: Reveal Source",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.revealSource",
+        "title": "MarkWeave: Reveal Source",
+        "enablement": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.insert",
-        "title": "MarkdownUP: Insert",
-        "enablement": "activeCustomEditorId == markdownup.editor"
+        "command": "markweave.insert",
+        "title": "MarkWeave: Insert",
+        "enablement": "activeCustomEditorId == markweave.editor"
       }
     ],
     "keybindings": [
       {
-        "command": "markdownup.save",
+        "command": "markweave.save",
         "key": "ctrl+s",
         "mac": "cmd+s",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.saveAs",
+        "command": "markweave.saveAs",
         "key": "ctrl+shift+s",
         "mac": "cmd+shift+s",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.find",
+        "command": "markweave.find",
         "key": "ctrl+f",
         "mac": "cmd+f",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.outline",
+        "command": "markweave.outline",
         "key": "ctrl+shift+o",
         "mac": "cmd+shift+o",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.outline",
+        "command": "markweave.outline",
         "key": "ctrl+alt+o",
         "mac": "cmd+alt+o",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.pinNavigation",
+        "command": "markweave.pinNavigation",
         "key": "ctrl+alt+p",
         "mac": "cmd+alt+p",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.toggleToolbar",
+        "command": "markweave.toggleToolbar",
         "key": "ctrl+alt+t",
         "mac": "cmd+alt+t",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.insert",
+        "command": "markweave.insert",
         "key": "ctrl+alt+i",
         "mac": "cmd+alt+i",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.focusMode",
+        "command": "markweave.focusMode",
         "key": "ctrl+alt+f",
         "mac": "cmd+alt+f",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.help",
+        "command": "markweave.help",
         "key": "ctrl+alt+h",
         "mac": "cmd+alt+h",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.bold",
+        "command": "markweave.bold",
         "key": "ctrl+b",
         "mac": "cmd+b",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.italic",
+        "command": "markweave.italic",
         "key": "ctrl+i",
         "mac": "cmd+i",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       },
       {
-        "command": "markdownup.exportPdf",
+        "command": "markweave.exportPdf",
         "key": "ctrl+alt+e",
         "mac": "cmd+alt+e",
-        "when": "activeCustomEditorId == markdownup.editor"
+        "when": "activeCustomEditorId == markweave.editor"
       }
     ],
     "configuration": {
-      "title": "MarkdownUP",
+      "title": "MarkWeave",
       "properties": {
-        "markdownup.defaultNavigationMode": {
+        "markweave.defaultNavigationMode": {
           "type": "string",
           "enum": [
             "find",
@@ -216,23 +217,23 @@
           "default": "find",
           "description": "Navigation mode used when a document has no saved preference."
         },
-        "markdownup.showToolbar": {
+        "markweave.showToolbar": {
           "type": "boolean",
           "default": true,
-          "description": "Show the MarkdownUP toolbar for documents without a saved preference."
+          "description": "Show the MarkWeave toolbar for documents without a saved preference."
         }
       }
     },
     "menus": {
       "webview/context": [
         {
-          "command": "markdownup.exportPdf",
-          "when": "webviewSection == markdownup",
+          "command": "markweave.exportPdf",
+          "when": "webviewSection == markweave",
           "group": "navigation"
         },
         {
-          "command": "markdownup.revealSource",
-          "when": "webviewSection == markdownup",
+          "command": "markweave.revealSource",
+          "when": "webviewSection == markweave",
           "group": "navigation"
         }
       ]
@@ -264,19 +265,20 @@
     "footnotes",
     "gfm",
     "typora",
-    "obsidian"
+    "obsidian",
+    "markweave"
   ],
   "author": "singerawei",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/singerawei/markdownup.git"
+    "url": "https://github.com/singerawei/markweave.git"
   },
   "bugs": {
-    "url": "https://github.com/singerawei/markdownup/issues"
+    "url": "https://github.com/singerawei/markweave/issues"
   },
-  "homepage": "https://github.com/singerawei/markdownup#readme",
-  "description": "Local-first WYSIWYG Markdown with editable, source-owned includes and lazy large-document rendering.",
+  "homepage": "https://github.com/singerawei/markweave#readme",
+  "description": "MarkWeave — local-first WYSIWYG Markdown with editable includes, extended syntax and PDF export.",
   "dependencies": {
     "highlight.js": "^11.12.0",
     "katex": "0.18.2",

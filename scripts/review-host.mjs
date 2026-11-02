@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 
 const out=resolve('docs/review-artifacts/response-0.3/live');await mkdir(out,{recursive:true});
 await copyFile('bench/results/vscode.json',join(out,'existing-host-suite.json'));
-const runRoot=await mkdtemp(join(tmpdir(),'markdownup-live-review-'));
+const runRoot=await mkdtemp(join(tmpdir(),'markweave-live-review-'));
 const workspace=join(runRoot,'workspace');await mkdir(workspace);
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const report=process.argv.includes('--resume')?JSON.parse(await readFile(join(out,'performance.json'),'utf8')):{timestamp:new Date().toISOString(),hardware:{cpu:cpus()[0].model,logicalCPUs:cpus().length,ramGiB:totalmem()/2**30,os:release(),node:process.version},bundleHash:createHash('sha256').update(await readFile('dist/editor.js')).digest('hex'),workspace,scope:'Real local VS Code extension development host; production bundle; CDP keyboard and mouse input; no CPU throttling. Open request excludes application boot. Three repetitions for core cases; stress cases once.',opens:[],interactions:[],errors:[]};
@@ -34,15 +34,15 @@ async function freePort(){const s=createServer();await new Promise(r=>s.listen(0
 async function startHost(round){
  const directory=join(runRoot,`session-${round}`);await mkdir(join(directory,'profile','User'),{recursive:true});
  await writeFile(join(directory,'profile','User','settings.json'),JSON.stringify({'telemetry.telemetryLevel':'off','update.mode':'none','extensions.autoCheckUpdates':false,'extensions.autoUpdate':false,'workbench.startupEditor':'none','security.workspace.trust.enabled':false,'window.restoreWindows':'none','workbench.colorTheme':'Default Light Modern','window.zoomLevel':0}));
- const ready=join(directory,'ready.json'),port=await freePort();const env={...process.env,MARKDOWNUP_REVIEW_READY:ready};delete env.ELECTRON_RUN_AS_NODE;
+ const ready=join(directory,'ready.json'),port=await freePort();const env={...process.env,MARKWEAVE_REVIEW_READY:ready};delete env.ELECTRON_RUN_AS_NODE;
  let development=resolve('.');
- if(process.env.MARKDOWNUP_TEST_VSIX){
+ if(process.env.MARKWEAVE_TEST_VSIX){
    const {execFileSync}=await import('node:child_process');const {readdir,writeFile,mkdir}=await import('node:fs/promises');const {existsSync}=await import('node:fs');
    const base=join(process.env.LOCALAPPDATA,'Programs','Microsoft VS Code');const cli=(await readdir(base)).map(name=>join(base,name,'resources','app','out','cli.js')).find(existsSync);
-   execFileSync(join(base,'Code.exe'),[cli,'--extensions-dir='+join(directory,'extensions'),'--user-data-dir='+join(directory,'profile'),'--install-extension',resolve(process.env.MARKDOWNUP_TEST_VSIX)],{windowsHide:true,env:{...env,ELECTRON_RUN_AS_NODE:'1'},stdio:'pipe'});
+   execFileSync(join(base,'Code.exe'),[cli,'--extensions-dir='+join(directory,'extensions'),'--user-data-dir='+join(directory,'profile'),'--install-extension',resolve(process.env.MARKWEAVE_TEST_VSIX)],{windowsHide:true,env:{...env,ELECTRON_RUN_AS_NODE:'1'},stdio:'pipe'});
    development=join(directory,'probe');await mkdir(development);await writeFile(join(development,'package.json'),JSON.stringify({name:'review-probe',publisher:'test',version:'0.0.1',engines:{vscode:'*'}}));
  }
- const child=spawn(join(process.env.LOCALAPPDATA,'Programs','Microsoft VS Code','Code.exe'),['--no-sandbox',...(process.env.MARKDOWNUP_TEST_VSIX?[]:['--disable-extensions']),'--skip-welcome','--skip-release-notes','--disable-workspace-trust',`--user-data-dir=${join(directory,'profile')}`,`--extensions-dir=${join(directory,'extensions')}`,`--extensionDevelopmentPath=${development}`,`--extensionTestsPath=${resolve('scripts/review-bridge.cjs')}`,`--remote-debugging-port=${port}`,workspace],{env,windowsHide:true,stdio:['ignore','pipe','pipe']});
+ const child=spawn(join(process.env.LOCALAPPDATA,'Programs','Microsoft VS Code','Code.exe'),['--no-sandbox',...(process.env.MARKWEAVE_TEST_VSIX?[]:['--disable-extensions']),'--skip-welcome','--skip-release-notes','--disable-workspace-trust',`--user-data-dir=${join(directory,'profile')}`,`--extensions-dir=${join(directory,'extensions')}`,`--extensionDevelopmentPath=${development}`,`--extensionTestsPath=${resolve('scripts/review-bridge.cjs')}`,`--remote-debugging-port=${port}`,workspace],{env,windowsHide:true,stdio:['ignore','pipe','pipe']});
  let log='';child.stdout.on('data',d=>log+=d);child.stderr.on('data',d=>log+=d);
  let config;for(let i=0;i<300;i++){try{config=JSON.parse(await readFile(ready,'utf8'));break;}catch{}if(child.exitCode!==null)throw Error('Host exited: '+log.slice(-2000));await wait(100);}
  if(!config)throw Error('Host not ready: '+log.slice(-2000));
@@ -96,7 +96,7 @@ async function measure(host,file,round,stress=false){
 
 export {startHost,stats,inputMeasure,workspace,out,report,wait};
 const already=(file,round)=>report.opens.some(row=>row.round===round&&(row.file===file||row.file.replaceAll('\\','/').endsWith('/'+file)));
-if(process.env.MARKDOWNUP_LIVE_HELPER!=='1'){
+if(process.env.MARKWEAVE_LIVE_HELPER!=='1'){
 for(let round=1;round<=3;round++){
  let host;try{host=await startHost(round);report.vscode=(await host.api('metrics')).vscode;console.log('LIVE_HOST_READY round='+round);
    for(const file of ['mermaid-20.md','single-1MB.md','single-5MB.md','includes-100.md','includes-500.md']){if(already(file,round))continue;try{await measure(host,file,round);}catch(error){report.errors.push({file,round,error:String(error)});console.log('CASE_ERROR '+file+' '+error);}}

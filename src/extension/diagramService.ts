@@ -20,7 +20,7 @@ export class DiagramService {
     if(this.prepare||this.warmed)return;
     this.prepare=(async()=>{
       const page=await this.page(this.workers[0]);
-      await page.evaluate(async()=>{const mermaid=(window as any).mermaidRuntime;mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'default',fontFamily:'Segoe UI, Microsoft YaHei, sans-serif',maxTextSize:100000,maxEdges:1000,suppressErrorRendering:true});try{await mermaid.render('markdownup-warmup','flowchart LR\n A --> B');}catch{/* Warm-up is best effort. */}finally{document.body.replaceChildren();}});
+      await page.evaluate(async()=>{const mermaid=(window as any).mermaidRuntime;mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'default',fontFamily:'Segoe UI, Microsoft YaHei, sans-serif',maxTextSize:100000,maxEdges:1000,suppressErrorRendering:true});try{await mermaid.render('markweave-warmup','flowchart LR\n A --> B');}catch{/* Warm-up is best effort. */}finally{document.body.replaceChildren();}});
       this.warmed=true;
     })().catch(()=>{/* A real render will report the actionable error. */}).finally(()=>{this.prepare=undefined;});
   }

@@ -23,11 +23,11 @@ export function activate(context: vscode.ExtensionContext) {
     revealSource: 'reveal',
   };
   for (const [name, action] of Object.entries(actions)) {
-    context.subscriptions.push(vscode.commands.registerCommand(`markdownup.${name}`, (item?: unknown) => provider.dispatch(action, item)));
+    context.subscriptions.push(vscode.commands.registerCommand(`markweave.${name}`, (item?: unknown) => provider.dispatch(action, item)));
   }
   context.subscriptions.push(
-    vscode.commands.registerCommand('markdownup.exportPdf', () => provider.openExport()),
-    vscode.commands.registerCommand('markdownup.open', async () => {
+    vscode.commands.registerCommand('markweave.exportPdf', () => provider.openExport()),
+    vscode.commands.registerCommand('markweave.open', async () => {
       const uri = vscode.window.activeTextEditor?.document.uri;
       if (uri) await vscode.commands.executeCommand('vscode.openWith', uri, EditorProvider.viewType);
     }),

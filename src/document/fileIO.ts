@@ -17,7 +17,7 @@ export class LocalFileIO implements FileIO {
   async write(uri: string, text: string) {
     this.beforeWrite?.(uri);
     const path = fileURLToPath(uri);
-    const temporary = `${path}.markdownup-${randomUUID()}.tmp`;
+    const temporary = `${path}.markweave-${randomUUID()}.tmp`;
     try { await writeFile(temporary,text,{encoding:'utf8',flag:'wx'}); await rename(temporary,path); }
     finally { await unlink(temporary).catch(() => {}); }
   }

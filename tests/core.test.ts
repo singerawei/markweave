@@ -141,7 +141,7 @@ test('a write-stage disk race reports saved and pending files without losing dir
 });
 
 test('real filesystem: Unicode, Windows separators, traversal, symlink and git diff',async t => {
-  const directory = await mkdtemp(join(tmpdir(),'markdownup-'));
+  const directory = await mkdtemp(join(tmpdir(),'markweave-'));
   t.after(() => rm(directory,{recursive:true,force:true}));
   await mkdir(join(directory,'章节'));
   const masterPath = join(directory,'MASTER.md'), childPath = join(directory,'章节','支付.md');
@@ -163,7 +163,7 @@ test('real filesystem: Unicode, Windows separators, traversal, symlink and git d
   await assert.rejects(io.resolve(source.uri,'https://example.org/a.md'),/relative/);
   await assert.rejects(io.resolve(source.uri,'a.csv'),/Only .md/);
   await assert.rejects(io.resolve(source.uri,'file.md?x'),/relative/);
-  const escape = await mkdtemp(join(tmpdir(),'markdownup-outside-')); t.after(() => rm(escape,{recursive:true,force:true}));
+  const escape = await mkdtemp(join(tmpdir(),'markweave-outside-')); t.after(() => rm(escape,{recursive:true,force:true}));
   await writeFile(join(escape,'secret.md'),'secret');
   await symlink(escape,join(directory,'escape'),process.platform === 'win32' ? 'junction' : 'dir');
   await assert.rejects(io.resolve(pathToFileURL(masterPath).href,'./escape/secret.md'),/outside/);

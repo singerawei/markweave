@@ -1,6 +1,6 @@
 # Third-party notices
 
-Runtime libraries bundled with MarkdownUP. Build/test tools are excluded.
+Runtime libraries bundled with MarkWeave. Build/test tools are excluded.
 
 ## @antfu/install-pkg 2.1.0
 

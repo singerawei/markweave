@@ -1,64 +1,64 @@
 {
-  "timestamp": "2026-11-02T15:50:56.516Z",
+  "timestamp": "2026-11-02T16:15:31.937Z",
   "vscode": "1.123.0",
   "scope": "Real VS Code webview; synthetic browser insertText and frame-to-frame scroll samples; timings start at CustomDocument creation, exclude VS Code application launch.",
   "results": [
     {
       "case": "B-1MB.md",
-      "readableMs": 389,
-      "editableMs": 833,
-      "saveMs": 16,
-      "inputP95Ms": 19.599999994039536,
-      "scrollP95Ms": 27.69999998807907,
+      "readableMs": 261,
+      "editableMs": 612,
+      "saveMs": 14,
+      "inputP95Ms": 43.69999998807907,
+      "scrollP95Ms": 19.599999994039536,
       "maxLongTaskMs": 0
     },
     {
       "case": "C-5MB.md",
-      "readableMs": 229,
-      "editableMs": 1693,
-      "saveMs": 88,
-      "inputP95Ms": 22.5,
-      "scrollP95Ms": 56.30000001192093,
+      "readableMs": 210,
+      "editableMs": 1657,
+      "saveMs": 54,
+      "inputP95Ms": 41.19999998807907,
+      "scrollP95Ms": 63.900000005960464,
       "maxLongTaskMs": 0
     },
     {
       "case": "D-100-includes/MASTER.md",
-      "readableMs": 287,
-      "editableMs": 1735,
-      "saveMs": 11,
-      "inputP95Ms": 20.299999982118607,
-      "scrollP95Ms": 67.30000001192093,
-      "maxLongTaskMs": 0
+      "readableMs": 275,
+      "editableMs": 1748,
+      "saveMs": 13,
+      "inputP95Ms": 45.30000001192093,
+      "scrollP95Ms": 321,
+      "maxLongTaskMs": 159
     },
     {
       "case": "M-1MB-20-diagrams.md",
-      "readableMs": 258,
-      "editableMs": 562,
-      "diagramMs": 681,
-      "saveMs": 16,
-      "inputP95Ms": 21.599999994039536,
-      "scrollP95Ms": 27.80000001192093,
+      "readableMs": 292,
+      "editableMs": 551,
+      "diagramMs": 1591,
+      "saveMs": 13,
+      "inputP95Ms": 18.200000017881393,
+      "scrollP95Ms": 19.200000017881393,
       "maxLongTaskMs": 0
     },
     {
       "case": "M-5MB-100-diagrams.md",
-      "readableMs": 156,
-      "editableMs": 1578,
-      "diagramMs": 1607,
-      "saveMs": 139,
-      "inputP95Ms": 20.799999982118607,
-      "scrollP95Ms": 61.10000002384186,
-      "maxLongTaskMs": 67
+      "readableMs": 140,
+      "editableMs": 1525,
+      "diagramMs": 1548,
+      "saveMs": 98,
+      "inputP95Ms": 23.900000005960464,
+      "scrollP95Ms": 55.099999994039536,
+      "maxLongTaskMs": 0
     },
     {
       "case": "M-composite/MASTER.md",
-      "readableMs": 221,
-      "editableMs": 1693,
-      "diagramMs": 232,
-      "saveMs": 18,
-      "inputP95Ms": 24.30000001192093,
-      "scrollP95Ms": 62.30000001192093,
-      "maxLongTaskMs": 55
+      "readableMs": 300,
+      "editableMs": 1757,
+      "diagramMs": 327,
+      "saveMs": 14,
+      "inputP95Ms": 30.099999994039536,
+      "scrollP95Ms": 65.09999999403954,
+      "maxLongTaskMs": 0
     }
   ]
 }

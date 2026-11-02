@@ -3,7 +3,7 @@ const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 exports.run = async function () {
-  const extension = vscode.extensions.getExtension('markdownup.markdownup');
+  const extension = vscode.extensions.getExtension('markweave.markweave');
   await extension.activate();
   const provider = extension.exports.provider;
  const crypto=require('node:crypto');const buildHashes={};for(const name of ['editor.js','editor.css','extension.js','mermaid-runtime.js','export-renderer.js'])buildHashes[name]=crypto.createHash('sha256').update(await fs.readFile(path.join(extension.extensionPath,'dist',name))).digest('hex');
@@ -20,7 +20,7 @@ exports.run = async function () {
           const relative = path.relative(root, file);
           if (relative.startsWith('..') || path.isAbsolute(relative)) throw Error('Outside review workspace');
           const startedAt = Date.now();
-          await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.file(file), 'markdownup.editor');
+          await vscode.commands.executeCommand('vscode.openWith', vscode.Uri.file(file), 'markweave.editor');
           result = { startedAt, file };
         } else if (request.url === '/metrics') {
           result = { vscode: vscode.version, buildHashes, extensionVersion:extension.packageJSON.version, documents: documents().map(doc => ({file: doc.uri.fsPath, openedAt: doc.openedAt, metrics: doc.metrics, segments: doc.graph.segments.length, dirtySources: [...doc.dirtySources], sourceCount: doc.graph.sourceUris.size})) };
@@ -43,8 +43,8 @@ exports.run = async function () {
       } catch (error) { response.writeHead(500, {'content-type':'application/json'}); response.end(JSON.stringify({error:String(error)})); }
     });
     server.listen(0, '127.0.0.1', async () => {
-      await fs.writeFile(process.env.MARKDOWNUP_REVIEW_READY, JSON.stringify({port:server.address().port, root, vscode:vscode.version}));
-      console.log('MARKDOWNUP_LIVE_REVIEW_READY');
+      await fs.writeFile(process.env.MARKWEAVE_REVIEW_READY, JSON.stringify({port:server.address().port, root, vscode:vscode.version}));
+      console.log('MARKWEAVE_LIVE_REVIEW_READY');
     });
   });
 };

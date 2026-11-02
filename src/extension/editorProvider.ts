@@ -13,7 +13,7 @@ import { exportPdf,type PdfOptions } from './pdf';
 import { DiagramService } from './diagramService';
 
 export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocument>, vscode.Disposable {
-  static readonly viewType = 'markdownup.editor';
+  static readonly viewType = 'markweave.editor';
   private readonly edits = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CompositeDocument>>();
   readonly onDidChangeCustomDocument = this.edits.event;
   private readonly documents = new Set<CompositeDocument>();
@@ -43,15 +43,15 @@ export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocu
       },100));
     };
     this.subscriptions.push(watcher,watcher.onDidChange(onFile),watcher.onDidCreate(onFile),watcher.onDidDelete(onFile),
-      vscode.workspace.registerTextDocumentContentProvider('markdownup-diff',{provideTextDocumentContent: uri => this.snapshots.get(uri.toString()) ?? ''}));
+      vscode.workspace.registerTextDocumentContentProvider('markweave-diff',{provideTextDocumentContent: uri => this.snapshots.get(uri.toString()) ?? ''}));
   }
   private enqueue<T>(task: () => Promise<T>): Promise<T> {
     const result = this.queue.then(task);
-    this.queue = result.catch(error => { void vscode.window.showErrorMessage(`MarkdownUP: ${String(error)}`); });
+    this.queue = result.catch(error => { void vscode.window.showErrorMessage(`MarkWeave: ${String(error)}`); });
     return result;
   }
   async openCustomDocument(uri: vscode.Uri, openContext: vscode.CustomDocumentOpenContext): Promise<CompositeDocument> {
-    if (uri.scheme !== 'file') throw new Error('MarkdownUP supports local Markdown files only.');
+    if (uri.scheme !== 'file') throw new Error('MarkWeave supports local Markdown files only.');
     const canonical = vscode.Uri.file(await realpath(uri.fsPath).catch(error => {
       if (openContext.backupId && (error as NodeJS.ErrnoException).code === 'ENOENT') return uri.fsPath;
       throw error;
@@ -201,14 +201,14 @@ export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocu
     });
   }
   private preferenceKey(document: CompositeDocument) {
-    return `markdownup.preferences:${document.uri.toString()}`;
+    return `markweave.preferences:${document.uri.toString()}`;
   }
   private savedPreferences(document: CompositeDocument): Record<string, unknown> {
     return this.context.workspaceState.get<Record<string, unknown>>(this.preferenceKey(document), {}) ?? {};
   }
   private documentPreferences(document: CompositeDocument) {
     const saved = this.savedPreferences(document);
-    const configuration = vscode.workspace.getConfiguration('markdownup');
+    const configuration = vscode.workspace.getConfiguration('markweave');
     return {
       navigationPinned: typeof saved.navigationPinned === 'boolean' ? saved.navigationPinned : false,
       navigationMode: saved.navigationMode === 'outline' || saved.navigationMode === 'find' ? saved.navigationMode : configuration.get<'find' | 'outline'>('defaultNavigationMode', 'find'),
@@ -298,11 +298,11 @@ export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocu
   }
   private async diff(document: CompositeDocument, uri: string) {
     const source = document.repository.sources.get(uri)!;
-    const external = vscode.Uri.parse(`markdownup-diff:/${randomBytes(8).toString('hex')}/external.md`);
-    const local = vscode.Uri.parse(`markdownup-diff:/${randomBytes(8).toString('hex')}/editor.md`);
+    const external = vscode.Uri.parse(`markweave-diff:/${randomBytes(8).toString('hex')}/external.md`);
+    const local = vscode.Uri.parse(`markweave-diff:/${randomBytes(8).toString('hex')}/editor.md`);
     this.snapshots.set(external.toString(),source.conflict?.external ?? '(file deleted)');
     this.snapshots.set(local.toString(),serializeSource(source));
-    await vscode.commands.executeCommand('vscode.diff',external,local,'External ↔ MarkdownUP');
+    await vscode.commands.executeCommand('vscode.diff',external,local,'External ↔ MarkWeave');
   }
   private html(webview: vscode.Webview) {
     const nonce = randomBytes(18).toString('base64');

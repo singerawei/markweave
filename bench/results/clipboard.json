@@ -2,64 +2,84 @@
   "scope": "Real VS Code clipboard API, confirmed by readback; unavailable results are not counted as successful OS clipboard acceptance.",
   "samples": [
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     },
     {
-      "verified": true
+      "verified": false,
+      "error": "Error: Clipboard write could not be confirmed. Check clipboard access and retry."
     }
   ]
 }

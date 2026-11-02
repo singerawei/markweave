@@ -1,0 +1,623 @@
+[
+  {
+    "name": "headings",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "heading"
+    ],
+    "html": "<h1>H1</h1>\n<h2>H2</h2>\n<h1>Setext H1</h1>\n<h2>Setext H2</h2>\n"
+  },
+  {
+    "name": "emphasis",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p><strong>bold</strong> <em>italic</em> <em><strong>both</strong></em> <s>strike</s> <code>code</code></p>\n"
+  },
+  {
+    "name": "links-inline",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p><a href=\"https://example.com\" title=\"title\">label</a></p>\n"
+  },
+  {
+    "name": "links-reference",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "reference_definition"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p><a href=\"https://example.com\" title=\"title\">label</a></p>\n"
+  },
+  {
+    "name": "autolink-angle",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p><a href=\"https://example.com\">https://example.com</a></p>\n"
+  },
+  {
+    "name": "autolink-bare",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>Visit <a href=\"https://example.com\">https://example.com</a> now.</p>\n"
+  },
+  {
+    "name": "images",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p><img src=\"./image.png\" alt=\"alt\" title=\"title\"></p>\n"
+  },
+  {
+    "name": "tables",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "table_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "table",
+      "table_row",
+      "table_header",
+      "table_cell"
+    ],
+    "html": "<table>\n<thead>\n<tr>\n<th style=\"text-align:left\">Left</th>\n<th style=\"text-align:center\">Center</th>\n<th style=\"text-align:right\">Right</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:left\">a</td>\n<td style=\"text-align:center\">b</td>\n<td style=\"text-align:right\">c</td>\n</tr>\n</tbody>\n</table>\n"
+  },
+  {
+    "name": "task-list",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "bullet_list_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "bullet_list",
+      "list_item",
+      "paragraph"
+    ],
+    "html": "<ul>\n<li data-checked=\"false\">todo</li>\n<li data-checked=\"true\">done</li>\n</ul>\n"
+  },
+  {
+    "name": "nested-lists",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "bullet_list_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "ordered_list_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "bullet_list",
+      "list_item",
+      "paragraph",
+      "ordered_list"
+    ],
+    "html": "<ul>\n<li>a\n<ul>\n<li>b\n<ol>\n<li>c</li>\n</ol>\n</li>\n</ul>\n</li>\n</ul>\n<ol>\n<li>one</li>\n<li>two</li>\n</ol>\n"
+  },
+  {
+    "name": "blockquote",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "blockquote_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "blockquote",
+      "paragraph"
+    ],
+    "html": "<blockquote>\n<p>quote</p>\n<blockquote>\n<p>nested</p>\n</blockquote>\n</blockquote>\n"
+  },
+  {
+    "name": "code-fence",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "fence"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "code_block"
+    ],
+    "html": "<pre><code class=\"language-ts\">const x: number = 1;\n</code></pre>\n"
+  },
+  {
+    "name": "indented-code",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "code_block"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "code_block"
+    ],
+    "html": "<pre><code>const x = 1;\n</code></pre>\n"
+  },
+  {
+    "name": "hardbreak",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>line one<br>\nline two<br>\nline three</p>\n"
+  },
+  {
+    "name": "thematic-break",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "hr"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "hr"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "hr"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "horizontal_rule"
+    ],
+    "html": "<hr>\n<hr>\n<hr>\n"
+  },
+  {
+    "name": "entities-escapes",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>© *literal* # hash</p>\n"
+  },
+  {
+    "name": "frontmatter",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "horizontal_rule",
+      "heading"
+    ],
+    "html": "<hr>\n<h2>title: Demo\ntags: [a, b]</h2>\n<h1>Body</h1>\n"
+  },
+  {
+    "name": "footnotes",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "footnote_definition"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `footnote_ref` not supported by Markdown parser",
+    "html": "<p>Text<sup class=\"footnote-ref\"><a href=\"#fn-1\" id=\"fnref-1\" data-footnote=\"1\">1</a></sup></p>\n<div class=\"footnote-def\" id=\"fn-1\"><span class=\"footnote-label\">1.</span><div class=\"footnote-body\"><p>Note text.</p>\n</div></div>\n"
+  },
+  {
+    "name": "definition-list",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "dl_open"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `dl_open` not supported by Markdown parser",
+    "html": "<dl>\n<dt>Term</dt>\n<dd>Definition</dd>\n</dl>\n"
+  },
+  {
+    "name": "math-inline",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `math_inline` not supported by Markdown parser",
+    "html": "<p>Euler: <span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msup><mi>e</mi><mrow><mi>i</mi><mi>π</mi></mrow></msup><mo>+</mo><mn>1</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding=\"application/x-tex\">e^{i\\pi}+1=0</annotation></semantics></math></span></p>\n"
+  },
+  {
+    "name": "math-block",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "math_block"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `math_block` not supported by Markdown parser",
+    "html": "<div class=\"math-block\"><span class=\"katex\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msubsup><mo>∫</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mi>d</mi><mi>x</mi></mrow><annotation encoding=\"application/x-tex\">\\int_0^1 x^2 dx</annotation></semantics></math></span></div>\n"
+  },
+  {
+    "name": "highlight",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p><mark>highlighted</mark></p>\n"
+  },
+  {
+    "name": "sub-sup",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>H<sub>2</sub>O and x<sup>2</sup></p>\n"
+  },
+  {
+    "name": "emoji-shortcode",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `emoji` not supported by Markdown parser",
+    "html": "<p>Hello 😄 🚀</p>\n"
+  },
+  {
+    "name": "wiki-link",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `wikilink` not supported by Markdown parser",
+    "html": "<p>See <a class=\"md-wikilink\" href=\"#wikilink-Wiki%20Page\" data-wikilink=\"Wiki Page\">Wiki Page</a>.</p>\n"
+  },
+  {
+    "name": "callout",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "blockquote_open"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [
+      "blockquote",
+      "paragraph"
+    ],
+    "html": "<blockquote class=\"md-alert md-alert-note\" data-title=\"Note\">\n<p>\nUseful information.</p>\n</blockquote>\n"
+  },
+  {
+    "name": "admonition",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "admonition"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `admonition` not supported by Markdown parser",
+    "html": "<div class=\"admonition admonition-note\"><div class=\"admonition-title\">Note</div><div class=\"admonition-body\"><p>Useful information.</p>\n</div></div>\n"
+  },
+  {
+    "name": "html-inline",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>Text with &lt;kbd&gt;Ctrl&lt;/kbd&gt; and &lt;mark&gt;mark&lt;/mark&gt;.</p>\n"
+  },
+  {
+    "name": "html-block",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "html_block"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "html_block"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>&lt;details&gt;\n&lt;summary&gt;More&lt;/summary&gt;</p>\n<p>Hidden text</p>\n<p>&lt;/details&gt;</p>\n"
+  },
+  {
+    "name": "toc",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      }
+    ],
+    "roundTrip": false,
+    "nodeTypes": [],
+    "error": "Error: Token type `toc` not supported by Markdown parser",
+    "html": "<nav class=\"md-toc md-toc-empty\" data-toc=\"true\"></nav>\n<h1>Section</h1>\n"
+  },
+  {
+    "name": "anchor-link",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "heading_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph",
+      "heading"
+    ],
+    "html": "<p><a href=\"#section\">jump</a></p>\n<h2>Section</h2>\n"
+  },
+  {
+    "name": "abbreviation",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "paragraph_open"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>*[HTML]: HyperText Markup Language</p>\n<p>HTML is useful.</p>\n"
+  },
+  {
+    "name": "mermaid",
+    "editable": true,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "fence"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "code_block"
+    ],
+    "html": "<pre><code class=\"language-mermaid\">flowchart LR\n A --&gt; B\n</code></pre>\n"
+  },
+  {
+    "name": "comments",
+    "editable": false,
+    "visiblePieces": [
+      {
+        "kind": "markdown",
+        "editable": false,
+        "type": "html_block"
+      },
+      {
+        "kind": "markdown",
+        "editable": true,
+        "type": "paragraph_open"
+      }
+    ],
+    "roundTrip": true,
+    "nodeTypes": [
+      "paragraph"
+    ],
+    "html": "<p>&lt;!-- comment --&gt;</p>\n<p>Visible text.</p>\n"
+  }
+]

@@ -1,6 +1,6 @@
 import { readFile,readdir,writeFile } from 'node:fs/promises';
 const lock = JSON.parse(await readFile('package-lock.json','utf8'));
-let output = '# Third-party notices\n\nRuntime libraries bundled with MarkdownUP. Build/test tools are excluded.\n';
+let output = '# Third-party notices\n\nRuntime libraries bundled with MarkWeave. Build/test tools are excluded.\n';
 for (const [directory,info] of Object.entries(lock.packages)) {
   if (!directory || info.dev) continue;
   const metadata = JSON.parse(await readFile(`${directory}/package.json`,'utf8'));

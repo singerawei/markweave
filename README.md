@@ -1,10 +1,14 @@
-# MarkdownUP
+<p align="center"><img src="media/markweave-logo.png" alt="MarkWeave" width="128"></p>
+
+# MarkWeave
 
 **本地优先的 VS Code Markdown 所见即所得编辑器。**
 
-MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑的可视化体验。它支持 `@import` 跨文件组合；在同一篇连续文档中编辑被引用内容时，保存只会写回真正变化的源文件。无需账号、数据库、网络或浏览器。
+MarkWeave 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑的可视化体验。它支持 `@import` 跨文件组合；在同一篇连续文档中编辑被引用内容时，保存只会写回真正变化的源文件。无需账号、数据库或浏览器；除你选择加载的远程图片外，不会主动请求网络。
 
-> 当前版本：`1.0.0`（Windows x64 预览版）。核心流程与自动化测试通过；稳定发布所需的完整人工/性能验收仍在收集中。
+> 当前版本：`2.0.0`（MarkWeave 品牌版，Windows x64 预览版）。核心流程与自动化测试通过；稳定发布所需的完整人工/性能验收仍在收集中。
+>
+> 从 MarkdownUP 升级：这是完整改名版本，扩展 ID 和设置前缀已变更；需要安装新的 VSIX，并按需重新设置选项。旧版 Release 仍保留。
 
 ## 功能特性
 
@@ -51,7 +55,7 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 
 安装包作为 GitHub Release 资源提供，不直接提交到 Git 仓库，因为 VSIX 约 125 MB（内含 Mermaid/PDF 使用的 Chromium 引擎）。
 
-1. 打开 [GitHub Releases](https://github.com/singerawei/markdownup/releases)，下载 `markdownup-win32-x64-1.0.0.vsix`。
+1. 打开 [GitHub Releases](https://github.com/singerawei/markweave/releases)，下载 `markweave-win32-x64-2.0.0.vsix`。
 2. 在 VS Code 中打开扩展视图，点击 **… → Install from VSIX…**，选择下载的文件。
 3. 重新加载 VS Code。
 4. 右键任意 `.md` 文件，选择 **Open With → Modular Markdown Editor**。
@@ -61,14 +65,14 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 ### 从源码构建
 
 ```sh
-git clone https://github.com/singerawei/markdownup.git
-cd markdownup
+git clone https://github.com/singerawei/markweave.git
+cd markweave
 npm ci
 npx playwright install chromium-headless-shell
 npm run package
 ```
 
-生成的 `markdownup-win32-x64-1.0.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
+生成的 `markweave-win32-x64-2.0.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
 
 ## 使用教程
 
@@ -153,7 +157,7 @@ Euler: $e^{i\pi}+1=0$
 - 复杂扩展（数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释、安全 HTML、Frontmatter）采用富渲染 + 源码编辑；点击块即可编辑原始 Markdown，不丢源码。
 - Wiki 嵌入 `![[Page]]` 目前是点击卡片，不做 Obsidian 式全文转嵌。
 - 远程图片打开即加载；PDF 导出会下载远程图片并内嵌，因此导出时可能需要网络。
-- 当前提供的安装包为 Windows x64 1.0.0 预览版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。当前自动化冒烟与覆盖证据见 [docs/review-artifacts/response-1.0.0](docs/review-artifacts/response-1.0.0/README.md)。
+- 当前提供的安装包为 Windows x64 MarkWeave 2.0.0 预览版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。当前自动化冒烟与覆盖证据见 [docs/review-artifacts/response-2.0.0](docs/review-artifacts/response-2.0.0/README.md)。
 
 ## 项目结构
 

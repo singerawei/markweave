@@ -10,9 +10,9 @@ const pkg = JSON.parse(readFileSync('package.json','utf8')) as {
 };
 const commandIds = new Set(pkg.contributes.commands.map(command => command.command));
 const bindings = pkg.contributes.keybindings;
-const editorScope = 'activeCustomEditorId == markdownup.editor';
+const editorScope = 'activeCustomEditorId == markweave.editor';
 
-test('every default keybinding targets a contributed command in the MarkdownUP editor',()=>{
+test('every default keybinding targets a contributed command in the MarkWeave editor',()=>{
   for(const binding of bindings){
     assert.ok(commandIds.has(binding.command),`Missing command contribution: ${binding.command}`);
     assert.equal(binding.when,editorScope,`Unscoped keybinding: ${binding.command}`);
@@ -24,12 +24,12 @@ test('every default keybinding targets a contributed command in the MarkdownUP e
 });
 
 test('required high-frequency commands have defaults and fallbacks',()=>{
-  const required = ['markdownup.save','markdownup.saveAs','markdownup.find','markdownup.outline','markdownup.pinNavigation','markdownup.toggleToolbar','markdownup.insert','markdownup.focusMode','markdownup.help'];
+  const required = ['markweave.save','markweave.saveAs','markweave.find','markweave.outline','markweave.pinNavigation','markweave.toggleToolbar','markweave.insert','markweave.focusMode','markweave.help'];
   for(const command of required){
     assert.ok(commandIds.has(command),`Missing command: ${command}`);
     assert.ok(bindings.some(binding => binding.command === command),`Missing default keybinding: ${command}`);
   }
-  assert.ok(bindings.filter(binding => binding.command === 'markdownup.outline').length >= 2,'Outline needs a documented fallback binding');
+  assert.ok(bindings.filter(binding => binding.command === 'markweave.outline').length >= 2,'Outline needs a documented fallback binding');
 });
 
 test('disabled-state and accessible chrome contracts are present',()=>{

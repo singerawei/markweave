@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.0
+
+- **Rebrand:** MarkdownUP is now **MarkWeave**, with a new logo, GitHub repository, extension ID, command/settings prefix, custom-editor view type and VSIX naming.
+- The extension identifier changes from `markdownup.markdownup` to `markweave.markweave`; install the new VSIX and reapply settings. Existing MarkdownUP releases remain available for rollback.
+- Add transparent icon assets in `media/` and use the logo in the README and extension package.
+- Keep the full extended Markdown rendering set introduced in 1.x, including math delimiters, nested marks, `<details>` Markdown, foldable callouts, footnotes, alerts, TOC, wikis and safe HTML.
+- Update CI, host tests, release gate paths, notifications, source markers and documentation to the MarkWeave identity.
+
 ## 1.0.0
 
 - Add `\(...\)` and `\[...\]` math delimiters, nested emphasis inside highlight/sub/superscript, Markdown parsed inside block `<details>`, and foldable `[!NOTE]-` / `[!TIP]+` callouts.

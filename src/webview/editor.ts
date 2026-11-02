@@ -180,7 +180,7 @@ function mountChunk(chunk:HTMLElement) {
     chunk.append(makeSegment(segment));
   }
 }
-function makeSegment(segment:Segment){const element=document.createElement('section');element.className='segment';element.dataset.id=segment.id;element.title=segment.sourceUri;element.tabIndex=0;element.dataset.vscodeContext=JSON.stringify({webviewSection:'markdownup',sourceUri:segment.sourceUri,pieceId:segment.pieceId});elements.set(segment.id,element);render(element,segment);return element;}
+function makeSegment(segment:Segment){const element=document.createElement('section');element.className='segment';element.dataset.id=segment.id;element.title=segment.sourceUri;element.tabIndex=0;element.dataset.vscodeContext=JSON.stringify({webviewSection:'markweave',sourceUri:segment.sourceUri,pieceId:segment.pieceId});elements.set(segment.id,element);render(element,segment);return element;}
 const observer = new IntersectionObserver(entries => {
   for (const entry of entries) {
     const chunk = entry.target as HTMLElement;
@@ -355,7 +355,7 @@ root.addEventListener('click',event => {
     }
   }
 });
-root.dataset.vscodeContext=JSON.stringify({webviewSection:'markdownup'});
+root.dataset.vscodeContext=JSON.stringify({webviewSection:'markweave'});
 root.addEventListener('keydown',event=>{const task=(event.target as HTMLElement).closest<HTMLElement>('li[role=checkbox]');if(!task||![' ','Enter'].includes(event.key)||readOnly)return;event.preventDefault();event.stopPropagation();const element=task.closest<HTMLElement>('.segment')!;const index=[...element.querySelectorAll('li[data-checked]')].indexOf(task);activate(element,segments.get(element.dataset.id!)!);const view=active?.view;if(view){let current=0;view.state.doc.descendants((node,pos)=>{if(node.type===schema.nodes.list_item&&node.attrs.checked!==null&&current++===index)view.dispatch(view.state.tr.setNodeMarkup(pos,undefined,{...node.attrs,checked:!node.attrs.checked}));});}},true);
 root.addEventListener('keydown',event => {
   if (event.key === 'Enter' && event.target instanceof HTMLElement && event.target.classList.contains('segment')) activate(event.target,segments.get(event.target.dataset.id!)!);
@@ -708,7 +708,7 @@ moreItem('Reveal source', () => {
   if (active) send({type: 'reveal', uri: active.segment.sourceUri, pieceId: active.segment.pieceId});
 }, {key: 'reveal', editable: true});
 moreItem('Help', () => showHelp(), {shortcut: 'help'});
-moreItem('About', () => information('MarkdownUP', '0.3.0 · Local-first Markdown with editable includes.'));
+moreItem('About', () => information('MarkWeave', '2.0.0 · Local-first Markdown with editable includes.'));
 moreItem('Hide toolbar', () => setToolbarHidden(true), {shortcut: 'toggleToolbar'});
 popover(moreButton, more, {
   onOpen: () => {
@@ -823,7 +823,7 @@ function showHelp() {
     `Undo: ${shortcutLabel('undo')} · Redo: ${shortcutLabel('redo')}`,
     `Export PDF: ${shortcutLabel('exportPdf')}`,
     '',
-    'Help is also available from the Command Palette (MarkdownUP: Help) and the ? key when you are not typing in the document.',
+    'Help is also available from the Command Palette (MarkWeave: Help) and the ? key when you are not typing in the document.',
     'Esc closes navigation when it is not pinned. Fixed navigation stays open until you close it or unpin it.',
     'Text fields keep their native undo history. Large blocks open in the native Text Editor.',
   ];
@@ -865,7 +865,7 @@ const commandRegistry: Record<string, () => void> = {
   },
   readOnly: () => setMode(!userReadOnly),
   hideToolbar: () => setToolbarHidden(true),
-  about: () => information('MarkdownUP', '0.3.0 · Local-first Markdown with editable includes.'),
+  about: () => information('MarkWeave', '2.0.0 · Local-first Markdown with editable includes.'),
 };
 
 function applyPreferences(preferences: any) {
@@ -944,7 +944,7 @@ window.addEventListener('message',event => {
     if (!restoration && focus && segments.has(focus)) { mountChunk(segmentChunks.get(focus)!); activate(elements.get(focus)!,segments.get(focus)!); if (savedDraft && active?.area) active.area.value = savedDraft; }
     window.scrollTo(0,scroll || vscode.getState()?.scroll || 0);
     status.textContent = readOnly ? 'Preparing editor…' : 'Ready';
-    performance.mark('markdownup-first-screen');
+    performance.mark('markweave-first-screen');
     const phase = readOnly ? 'readable' : 'editable';
     requestAnimationFrame(() => send({type:'metrics',phase,timestamp:Date.now()}));
   } else if (message.type === 'append') {

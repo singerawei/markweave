@@ -18,7 +18,7 @@ async function launch(page:Page,files:Record<string,string>) {
     resolve:async (from,path) => new URL(path,from).href
   });
   const graph = new DocumentGraph(repository,'file:///C:/docs/MASTER.md'); await graph.build();
-  await page.setContent('<header><strong>MarkdownUP</strong><span id="title"></span><span id="status"></span><button id="save">保存</button></header><nav id="toolbar"></nav><aside id="conflicts"></aside><div id="notice" hidden></div><main id="document"></main><footer>本地 Markdown · 点击正文编辑 · Ctrl/Cmd+S 保存</footer>');
+  await page.setContent('<header><strong>MarkWeave</strong><span id="title"></span><span id="status"></span><button id="save">保存</button></header><nav id="toolbar"></nav><aside id="conflicts"></aside><div id="notice" hidden></div><main id="document"></main><footer>本地 Markdown · 点击正文编辑 · Ctrl/Cmd+S 保存</footer>');
   const publish = (message:unknown) => page.evaluate(message => window.postMessage(message,'*'),message);
   repository.on('change',event => { if (event.kind === 'piece') void publish({type:'patch',...event});else if(event.kind==='pieces')void publish({type:'pieces',...event}); });
   await page.exposeFunction('host',async (message:any) => {

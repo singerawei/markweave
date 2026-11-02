@@ -9,7 +9,7 @@ import{serializeSource}from'../../src/document/serializer';
 
 export async function run() {
   const directory = await realpath(await mkdtemp(join(vscode.workspace.workspaceFolders![0].uri.fsPath,'fixture-')));
-  const extension = vscode.extensions.getExtension('markdownup.markdownup')!;
+  const extension = vscode.extensions.getExtension('markweave.markweave')!;
   await extension.activate();
   const provider = extension.exports.provider as EditorProvider;
   const master = join(directory,'MASTER.md'),child = join(directory,'child.md');
@@ -42,7 +42,7 @@ export async function run() {
   await wait(() => posted.some(message => message.type === 'preferences' && message.preferences?.toolbarHidden === true));
   receive({type:'preference',key:'navigationMode',value:'outline'});
   await wait(() => posted.some(message => message.type === 'preferences' && message.preferences?.navigationMode === 'outline'));
-  const savedPreferences = provider.context.workspaceState.get<Record<string,unknown>>('markdownup.preferences:'+document.uri.toString())!;
+  const savedPreferences = provider.context.workspaceState.get<Record<string,unknown>>('markweave.preferences:'+document.uri.toString())!;
   assert.equal(savedPreferences.navigationPinned,true);
   assert.equal(savedPreferences.toolbarHidden,true);
   assert.equal(savedPreferences.navigationMode,'outline');
@@ -50,10 +50,10 @@ export async function run() {
   await wait(() => posted.some(message => message.type === 'preferences' && message.preferences?.navigationPinned === false));
   console.log("HOST_STAGE commands");
   const registered = await vscode.commands.getCommands(true);
-  for(const command of ['markdownup.save','markdownup.saveAs','markdownup.find','markdownup.outline','markdownup.navigate','markdownup.pinNavigation','markdownup.toggleToolbar','markdownup.insert','markdownup.focusMode','markdownup.help','markdownup.exportPdf']){
+  for(const command of ['markweave.save','markweave.saveAs','markweave.find','markweave.outline','markweave.navigate','markweave.pinNavigation','markweave.toggleToolbar','markweave.insert','markweave.focusMode','markweave.help','markweave.exportPdf']){
     assert.ok(registered.includes(command),`Registered command missing: ${command}`);
   }
-  for(const [command,action] of [['markdownup.help','help'],['markdownup.pinNavigation','pinNavigation'],['markdownup.toggleToolbar','toggleToolbar'],['markdownup.find','find'],['markdownup.insert','insert']]){
+  for(const [command,action] of [['markweave.help','help'],['markweave.pinNavigation','pinNavigation'],['markweave.toggleToolbar','toggleToolbar'],['markweave.find','find'],['markweave.insert','insert']]){
     await vscode.commands.executeCommand(command);
     await wait(() => posted.some(message => message.type === 'command' && message.command === action));
   }
@@ -76,7 +76,7 @@ export async function run() {
   const clipboardRead=()=>Promise.race([Promise.resolve(vscode.env.clipboard.readText()),new Promise<string>(resolve=>setTimeout(()=>resolve(''),1500))]);
   const oldClipboard=await clipboardRead();const clipboardEvidence:{verified:boolean;error?:string}[]=[];
   try{for(let i=0;i<20;i++){const id='copy-'+i;receive({type:'copy',id,text:'Native clipboard sample '+i});await wait(()=>posted.some(message=>message.type==='result'&&message.id===id));const response=posted.find(message=>message.type==='result'&&message.id===id);if(response.error){assert.match(response.error,/Clipboard/);clipboardEvidence.push({verified:false,error:response.error});}else{assert.equal(await clipboardRead(),'Native clipboard sample '+i);clipboardEvidence.push({verified:true});}}}finally{await Promise.race([Promise.resolve(vscode.env.clipboard.writeText(oldClipboard)),new Promise(resolve=>setTimeout(resolve,1500))]);}
-  await writeFile(join(process.env.MARKDOWNUP_REPORT_DIR!,'clipboard.json'),JSON.stringify({scope:'Real VS Code clipboard API, confirmed by readback; unavailable results are not counted as successful OS clipboard acceptance.',samples:clipboardEvidence},null,2));
+  await writeFile(join(process.env.MARKWEAVE_REPORT_DIR!,'clipboard.json'),JSON.stringify({scope:'Real VS Code clipboard API, confirmed by readback; unavailable results are not counted as successful OS clipboard acceptance.',samples:clipboardEvidence},null,2));
   console.log("HOST_STAGE save-as");
   const rootModel=document.repository.sources.get(document.rootUri)!;const rootHeading=rootModel.pieces[0];document.repository.apply([{uri:document.rootUri,pieceId:rootHeading.id,before:rootHeading.raw,after:'# Copy only\n\n'}]);await provider.saveCustomDocumentAs(document,vscode.Uri.file(join(directory,'COPY.md')));assert.equal(await readFile(master,'utf8'),masterText);assert.match(await readFile(join(directory,'COPY.md'),'utf8'),/Copy only/);await provider.revertCustomDocument(document);
   console.log("HOST_STAGE include");
@@ -107,7 +107,7 @@ export async function run() {
   pdfDoc.repository.apply([{uri:payment.uri,pieceId:paymentPiece.id,before:paymentPiece.raw,after:'UNSAVED EXPORT SNAPSHOT\n'}]);
   const pdf=await provider.exportToPdf(pdfDoc,{format:'A4',landscape:false,margin:20,fontSize:14,header:'Integration test',footer:'Offline export',pageNumbers:true,headingBreak:false,preview:true});
   const pdfBytes=await readFile(pdf!.fsPath);assert.equal(pdfBytes.subarray(0,4).toString(),'%PDF');assert.ok(pdfBytes.length>2000);assert.match(await readFile(child,'utf8'),/Saved version/);
-  await writeFile(join(process.env.MARKDOWNUP_REPORT_DIR!,'export-sample.pdf'),pdfBytes);
+  await writeFile(join(process.env.MARKWEAVE_REPORT_DIR!,'export-sample.pdf'),pdfBytes);
   const diagramPiece=payment.pieces.find(piece=>piece.raw.includes('flowchart LR'))!;
   pdfDoc.repository.apply([{uri:payment.uri,pieceId:diagramPiece.id,before:diagramPiece.raw,after:'```mermaid\ninvalid diagram !!!\n```\n'}]);
   await assert.rejects(provider.exportToPdf(pdfDoc,{format:'A4',landscape:false,margin:20,fontSize:14,header:'',footer:'',pageNumbers:true,headingBreak:false,preview:true}));
@@ -123,10 +123,10 @@ export async function run() {
   extendedDoc.dispose();
   await writeFile(child,'# Child\n\nStripe\n');
   console.log("HOST_STAGE png");
-  for(let i=0;i<20;i++){const png=await(provider as any).diagrams.png(`flowchart LR\n A["中文 <b>text ${i}</b>"] --> B[End]`,false);assert.equal(Buffer.from(png).subarray(0,8).toString('hex'),'89504e470d0a1a0a');if(i===0)await writeFile(join(process.env.MARKDOWNUP_REPORT_DIR!,'diagram-export.png'),png);}
+  for(let i=0;i<20;i++){const png=await(provider as any).diagrams.png(`flowchart LR\n A["中文 <b>text ${i}</b>"] --> B[End]`,false);assert.equal(Buffer.from(png).subarray(0,8).toString('hex'),'89504e470d0a1a0a');if(i===0)await writeFile(join(process.env.MARKWEAVE_REPORT_DIR!,'diagram-export.png'),png);}
   console.log("HOST_STAGE webview-bench");
   // Smoke the registered custom editor and an actual webview in an isolated profile.
-  await vscode.commands.executeCommand('vscode.openWith',vscode.Uri.file(master),'markdownup.editor');
+  await vscode.commands.executeCommand('vscode.openWith',vscode.Uri.file(master),'markweave.editor');
   const liveDocuments = (provider as any).documents as Set<CompositeDocument>;
   await wait(() => [...liveDocuments].some(doc => doc.uri.fsPath.toLowerCase() === master.toLowerCase() && doc.metrics.editable !== undefined));
   await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
@@ -135,7 +135,7 @@ export async function run() {
   for (const name of ['B-1MB.md','C-5MB.md','D-100-includes/MASTER.md','M-1MB-20-diagrams.md','M-5MB-100-diagrams.md','M-composite/MASTER.md']) {
     const file = join(corpus,name);
     console.log('HOST_BENCH_CASE',name);
-    await vscode.commands.executeCommand('vscode.openWith',vscode.Uri.file(file),'markdownup.editor');
+    await vscode.commands.executeCommand('vscode.openWith',vscode.Uri.file(file),'markweave.editor');
     let live:CompositeDocument | undefined;
     await wait(() => { live = [...liveDocuments].find(doc => doc.uri.fsPath.toLowerCase() === file.toLowerCase()); return live?.metrics.editable !== undefined; });
     console.log('HOST_BENCH_EDITABLE',name,live!.metrics);
@@ -148,9 +148,9 @@ export async function run() {
     results.push({case:name,readableMs:live!.metrics.readable,editableMs:live!.metrics.editable,diagramMs:live!.metrics.diagram,saveMs,...live!.benchmark});
     await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
   }
-  await writeFile(join(process.env.MARKDOWNUP_REPORT_DIR ?? join(extension.extensionPath,'bench/results'),'vscode.json'),JSON.stringify({timestamp:new Date().toISOString(),vscode:vscode.version,scope:'Real VS Code webview; synthetic browser insertText and frame-to-frame scroll samples; timings start at CustomDocument creation, exclude VS Code application launch.',results},null,2)+'\n');
+  await writeFile(join(process.env.MARKWEAVE_REPORT_DIR ?? join(extension.extensionPath,'bench/results'),'vscode.json'),JSON.stringify({timestamp:new Date().toISOString(),vscode:vscode.version,scope:'Real VS Code webview; synthetic browser insertText and frame-to-frame scroll samples; timings start at CustomDocument creation, exclude VS Code application launch.',results},null,2)+'\n');
   console.table(results);
   // The runner owns this temporary workspace and removes it after VS Code
   // exits. Windows file watchers can still hold the directory while alive.
-  console.log('MARKDOWNUP_HOST_TESTS_PASSED: save, ownership, undo/redo, backup/restore, registered webview');
+  console.log('MARKWEAVE_HOST_TESTS_PASSED: save, ownership, undo/redo, backup/restore, registered webview');
 }
