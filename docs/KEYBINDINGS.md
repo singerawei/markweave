@@ -1,4 +1,4 @@
-# 快捷键与宿主冲突审计（0.3.0）
+# 快捷键与宿主冲突审计（1.0.0）
 
 MarkdownUP 不维护自己的快捷键编辑器。所有动作都注册为 `markdownup.*` VS Code 命令，并使用 `contributes.keybindings` 与 `activeCustomEditorId == markdownup.editor` 条件；用户可以在 **File → Preferences → Keyboard Shortcuts** 中重映射任意命令。
 

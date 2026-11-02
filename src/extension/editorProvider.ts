@@ -182,6 +182,12 @@ export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocu
               void vscode.commands.executeCommand('vscode.openWith',vscode.Uri.parse(target),EditorProvider.viewType);
             }
           }
+          else if (message.type === 'wikilink' && document.graph.sourceUris.has(message.uri) && typeof message.target === 'string') {
+            let target = message.target.split('#')[0].trim();
+            if (!/\.md$/i.test(target)) target += '.md';
+            const uri = await document.repository.io.resolve(message.uri, target);
+            void vscode.commands.executeCommand('vscode.openWith', vscode.Uri.parse(uri), EditorProvider.viewType);
+          }
           else if (message.type === 'conflict' && document.trackedSources.has(message.uri)) {
             if (message.choice === 'diff') await this.diff(document,message.uri);
             else if (message.choice === 'reload' || message.choice === 'keep') await document.repository.resolveConflict(message.uri,message.choice);
@@ -302,7 +308,7 @@ export class EditorProvider implements vscode.CustomEditorProvider<CompositeDocu
     const nonce = randomBytes(18).toString('base64');
     const script = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri,'dist','editor.js'));
     const style = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri,'dist','editor.css'));
-    return `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} data: blob:; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; connect-src 'none'; font-src ${webview.cspSource};"><link rel="stylesheet" href="${style}"></head><body><span id="status" role="status" class="sr-only">Loading…</span><nav id="toolbar" aria-label="Formatting toolbar"></nav><aside id="conflicts"></aside><div id="notice" role="alert" hidden></div><main id="document" aria-label="Markdown document"></main><script nonce="${nonce}" src="${script}"></script></body></html>`;
+    return `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} data: blob: https: http:; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; connect-src 'none'; font-src ${webview.cspSource};"><link rel="stylesheet" href="${style}"></head><body><span id="status" role="status" class="sr-only">Loading…</span><nav id="toolbar" aria-label="Formatting toolbar"></nav><aside id="conflicts"></aside><div id="notice" role="alert" hidden></div><main id="document" aria-label="Markdown document"></main><script nonce="${nonce}" src="${script}"></script></body></html>`;
   }
   dispose() { this.diagrams.dispose(); for (const timer of this.pendingFiles.values()) clearTimeout(timer); for (const item of this.subscriptions) item.dispose(); this.edits.dispose(); }
 }

@@ -4,7 +4,9 @@ import { join,dirname,resolve } from 'node:path';
 import { readFile,realpath,writeFile,rm,mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import {markdownTokenizer} from '../shared/markdown';
+import {markdownTokenizer,collectReferences,collectAbbreviations,type MarkdownEnv} from '../shared/markdown';
+import {tocFromSegments} from '../shared/headings';
+import {frontmatterHtml,isFrontmatter} from '../shared/frontmatter';
 import { randomUUID } from 'node:crypto';
 import type { CompositeDocument } from './compositeDocument';
 
@@ -18,14 +20,33 @@ export async function exportPdf(document:CompositeDocument,extensionPath:string,
   // Snapshot the complete composition, including unsaved blocks, before launching Chromium.
   const segments = document.graph.segments.map(segment => ({...segment,text:document.repository.sources.get(segment.sourceUri)?.pieceById.get(segment.pieceId)?.raw ?? segment.text}));
   const broken = segments.find(segment => segment.error); if (broken) throw new Error(broken.error);
-  const md = markdownTokenizer();
+  const md = markdownTokenizer(true);
+  const env: MarkdownEnv = {
+    references: collectReferences(segments.map(segment => segment.text)),
+    abbreviations: collectAbbreviations(segments.map(segment => segment.text)),
+    toc: tocFromSegments(segments)
+  };
   let currentUri = '';
   const images:Promise<void>[] = [];
   md.renderer.rules.image = (tokens,index) => {
     const token = tokens[index], src = String(token.attrGet('src') ?? '');
     const id = randomUUID(); const owner = currentUri;
+    if (/^https?:\/\//i.test(src)) {
+      images.push((async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+        try {
+          const response = await fetch(src,{signal:controller.signal});
+          if (!response.ok) throw new Error(`Remote image returned ${response.status}: ${src}`);
+          const bytes = Buffer.from(await response.arrayBuffer());
+          if (bytes.length > 20 * 1024 * 1024) throw new Error(`Remote image is larger than 20 MB: ${src}`);
+          imageData.set(id,`data:${response.headers.get('content-type') || 'image/png'};base64,${bytes.toString('base64')}`);
+        } finally { clearTimeout(timeout); }
+      })());
+      return `<img src="IMAGE-${id}" alt="${escape(token.content)}">`;
+    }
     images.push((async () => {
-      if (/^[a-z][\w+.-]*:|^\/\/|^\\\\/i.test(src)) throw new Error(`Only local images can be exported: ${src}`);
+      if (/^[a-z][\w+.-]*:|^\/\/|^\\\\/i.test(src)) throw new Error(`Unsupported image source: ${src}`);
       const path = await realpath(resolve(dirname(fileURLToPath(owner)),decodeURIComponent(src)));
       const roots = vscode.workspace.workspaceFolders?.map(folder => folder.uri.fsPath) ?? [dirname(document.uri.fsPath)];
       const allowed = await Promise.all(roots.map(root => realpath(root)));
@@ -36,7 +57,11 @@ export async function exportPdf(document:CompositeDocument,extensionPath:string,
     return `<img src="IMAGE-${id}" alt="${escape(token.content)}">`;
   };
   const imageData = new Map<string,string>();
-  let body = segments.map(segment => { currentUri=segment.sourceUri; return md.render(segment.text); }).join('\n');
+  let body = segments.map((segment,index) => {
+    currentUri = segment.sourceUri;
+    if (index === 0 && isFrontmatter(segment.text)) return frontmatterHtml(segment.text);
+    return `<section id="segment-${escape(segment.id)}">${md.render(segment.text,env)}</section>`;
+  }).join('\n');
   await Promise.all(images); for (const [id,data] of imageData) body=body.replace(`IMAGE-${id}`,data);
   await vscode.window.withProgress({location:vscode.ProgressLocation.Notification,title:'Exporting PDF',cancellable:true},async (progress,token) => {
     const browser = await chromium.launch({executablePath:join(extensionPath,'engine','chrome-headless-shell.exe'),headless:true});
@@ -44,7 +69,7 @@ export async function exportPdf(document:CompositeDocument,extensionPath:string,
     try {
       if (token.isCancellationRequested) throw new Error('Export cancelled.');
       const page = await browser.newPage(); await page.route('**/*',route => route.abort());
-      await page.setContent(`<html><head><meta charset="utf-8"><style>body{font:${options.fontSize}px/1.65 'Segoe UI','Microsoft YaHei',sans-serif;color:#202630}img,svg{max-width:100%;height:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f5f7;padding:12px;border-radius:6px}code{font-family:Consolas,monospace}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:6px}thead{display:table-header-group}tr,figure{break-inside:avoid}h1,h2,h3{break-after:avoid}h1{${options.headingBreak?'break-before:page':''}}h1:first-child{break-before:auto}svg{display:block;margin:auto}.hljs-keyword,.hljs-selector-tag{color:#7838a5}.hljs-string,.hljs-attr{color:#38721c}.hljs-number,.hljs-literal{color:#875000}.hljs-comment{color:#596575}.hljs-title,.hljs-type{color:#155e99}li[data-checked]{list-style:none}li[data-checked]::before{content:"[ ] ";}li[data-checked=true]::before{content:"[x] ";}</style></head><body>${body}</body></html>`);
+      await page.setContent(`<html><head><meta charset="utf-8"><style>body{font:${options.fontSize}px/1.65 'Segoe UI','Microsoft YaHei',sans-serif;color:#202630}img,svg{max-width:100%;height:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f5f7;padding:12px;border-radius:6px}code{font-family:Consolas,monospace}table{border-collapse:collapse;width:100%}td,th{border:1px solid #bbb;padding:6px}thead{display:table-header-group}tr,figure{break-inside:avoid}h1,h2,h3{break-after:avoid}h1{${options.headingBreak?'break-before:page':''}}h1:first-child{break-before:auto}svg{display:block;margin:auto}.hljs-keyword,.hljs-selector-tag{color:#7838a5}.hljs-string,.hljs-attr{color:#38721c}.hljs-number,.hljs-literal{color:#875000}.hljs-comment{color:#596575}.hljs-title,.hljs-type{color:#155e99}li[data-checked]{list-style:none}li[data-checked]::before{content:"[ ] ";}li[data-checked=true]::before{content:"[x] ";}mark{background:#fff2a8;color:inherit}dl dt{font-weight:700}dl dd{margin:0 0 8px 24px}.md-alert{margin:12px 0;padding:10px 14px;border-left:4px solid #2f6fb3;background:#f2f7fc;border-radius:4px}.md-alert::before{content:attr(data-title);display:block;font-weight:700;margin-bottom:4px}.md-alert-warning,.md-alert-caution{border-left-color:#c77700;background:#fff7e8}.md-alert-important{border-left-color:#8a3ffc;background:#f7f2ff}.md-alert-tip,.md-alert-success{border-left-color:#2e7d32;background:#f1f8f1}.md-alert-danger,.md-alert-bug{border-left-color:#c62828;background:#fdf0f0}.admonition{margin:12px 0;padding:10px 14px;border:1px solid #ccd5df;border-radius:6px;background:#f7f9fb}.admonition-title{font-weight:700;margin-bottom:6px}.math-block{margin:12px 0;overflow:auto;text-align:center}.md-toc{margin:12px 0;padding:10px 14px;border:1px solid #d5dbe2;border-radius:6px;background:#f8fafc}.md-toc-title{font-weight:700;margin-bottom:6px}.md-toc ul{list-style:none;padding-left:0;margin:0}.md-toc li{margin:2px 0}.md-toc-level-2{padding-left:16px}.md-toc-level-3,.md-toc-level-4,.md-toc-level-5,.md-toc-level-6{padding-left:30px}.footnote-def{border-top:1px solid #ccd5df;margin-top:8px;padding-top:6px;font-size:.9em}.footnote-label{font-weight:700;margin-right:6px}.frontmatter-card{margin:0 0 18px;padding:12px 16px;border:1px solid #ccd5df;border-radius:6px;background:#f8fafc}.frontmatter-title{font-weight:700;margin-bottom:6px}.frontmatter-card dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px}.frontmatter-card dt{font-weight:700}.frontmatter-card dd{margin:0}.md-comment,.md-comment-block{display:none}.md-wikilink{text-decoration:underline}.md-embed{display:inline-block;padding:1px 6px;border:1px dashed #8aa0b5;border-radius:4px;color:#375d80}.md-toc a,.md-wikilink{color:#1f5f99}</style></head><body>${body}</body></html>`);
       progress.report({message:'Rendering diagrams and images…'});
       await page.addScriptTag({path:join(extensionPath,'dist','mermaid-runtime.js')});
       await page.addScriptTag({path:join(extensionPath,'dist','export-renderer.js')});

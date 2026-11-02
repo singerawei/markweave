@@ -13,6 +13,9 @@ import { inputRules, textblockTypeInputRule, wrappingInputRule } from 'prosemirr
 import { tableEditing, goToNextCell,addRowAfter,addColumnAfter,deleteRow,deleteColumn,deleteTable,toggleHeaderRow } from 'prosemirror-tables';
 import { parser, schema, serializer, markdownTokenizer } from './schema';
 import { preserveEdges } from '../document/serializer';
+import { collectAbbreviations, collectReferences, type MarkdownEnv } from '../shared/markdown';
+import { tocFromSegments } from '../shared/headings';
+import { frontmatterHtml, isFrontmatter } from '../shared/frontmatter';
 import type { Segment } from '../shared/types';
 
 declare function acquireVsCodeApi(): {postMessage(message:unknown):void;getState():any;setState(state:unknown):void};
@@ -39,14 +42,20 @@ const elements = new Map<string,HTMLElement>();
 const chunkData = new Map<HTMLElement,Segment[]>();
 const segmentChunks = new Map<string,HTMLElement>();
 let segmentOrder:Segment[]=[];const segmentIndices=new Map<string,number>();
-const renderer = markdownTokenizer();
+const renderer = markdownTokenizer(true);
 let resourceBase = '';
+let markdownEnv: MarkdownEnv = {};
+const anchorTargets = new Map<string, Segment>();
+const headingSlugs = new Map<string, string>();
 renderer.renderer.rules.image = (tokens,index) => {
   const token = tokens[index];
   const src = String(token.attrGet('src') ?? '');
   const alt = token.content;
+  const title = String(token.attrGet('title') ?? '');
+  const titleAttr = title ? ` title="${renderer.utils.escapeHtml(title)}"` : '';
+  if (/^https?:\/\//i.test(src)) return `<img loading="lazy" src="${renderer.utils.escapeHtml(src)}" alt="${renderer.utils.escapeHtml(alt)}"${titleAttr}>`;
   if (/^(?:[a-z][a-z\d+.-]*:|\/\/|\\\\)/i.test(src) && !src.startsWith('data:image/')) return `<span class="image-placeholder">🖼 ${renderer.utils.escapeHtml(alt || src)}</span>`;
-  try { return `<img loading="lazy" src="${renderer.utils.escapeHtml(new URL(src,resourceBase + '/').href)}" alt="${renderer.utils.escapeHtml(alt)}">`; }
+  try { return `<img loading="lazy" src="${renderer.utils.escapeHtml(new URL(src,resourceBase + '/').href)}" alt="${renderer.utils.escapeHtml(alt)}"${titleAttr}>`; }
   catch { return renderer.utils.escapeHtml(alt); }
 };
 function send(message:unknown) { vscode.postMessage(message); }
@@ -94,23 +103,75 @@ function setMode(value:boolean){deactivate();userReadOnly=value;readOnly=value;s
 function render(element:HTMLElement,segment:Segment) {
   if (active?.element === element) return;
   element.replaceChildren();
+  element.className = 'segment';
+  delete element.dataset.large;
   const fenced=/^\s*(?:`{3,}|~{3,})/.test(segment.text);
   const large=segment.text.length>(fenced?128*1024:16*1024)||(/^\s*\|/.test(segment.text)&&segment.text.split('\n').length>200);
   element.dataset.large=String(large);
   if(large){const label=document.createElement('p');label.className='large-block-notice';label.textContent='Large block: inline editing is limited to 128 KiB code, 16 KiB prose or 200 table rows. Use Text Editor for responsive editing. The complete content is preserved.';const preview=document.createElement('pre');preview.textContent=segment.text.slice(0,4000)+'\n…';const open=document.createElement('button');open.textContent='Edit in Text Editor';open.onclick=event=>{event.stopPropagation();send({type:'reveal',uri:segment.sourceUri,pieceId:segment.pieceId});};element.append(label,open,preview);element.dataset.rendered='true';return;}
   if (segment.error) { element.classList.add('include-error'); element.textContent = segment.error; return; }
-  if (!segment.editable && !/^\s*(```|~~~)mermaid\b/.test(segment.text)) {
-    const raw = document.createElement('pre'); raw.className = 'raw-preview'; raw.textContent = segment.text;
-    const label = document.createElement('small'); label.textContent = 'Raw Markdown · Click to edit';
-    element.append(label,raw);
-  } else {
-    resourceBase = (segment as any).resourceBase ?? '';
-    element.innerHTML = renderer.render(segment.text);
-    for(const item of element.querySelectorAll<HTMLElement>('li[data-checked]')){item.setAttribute('role','checkbox');item.setAttribute('aria-checked',item.dataset.checked!);item.tabIndex=0;}
-    enhance(element,segment,text=>update(segment,text));
-    if (!segment.text.trim()) element.innerHTML = '<p class="empty">Start writing…</p>';
+  if (isFrontmatter(segment.text)) {
+    element.classList.add('frontmatter-block','source-backed');
+    element.innerHTML = frontmatterHtml(segment.text);
+    element.dataset.rendered = 'true';
+    return;
   }
+  if (!segment.text.trim()) {
+    element.innerHTML = '<p class="empty">Start writing…</p>';
+    element.dataset.rendered = 'true';
+    return;
+  }
+  resourceBase = (segment as any).resourceBase ?? '';
+  try {
+    element.innerHTML = renderer.render(segment.text, markdownEnv);
+  } catch {
+    renderRawPreview(element,segment);
+    element.dataset.rendered = 'true';
+    return;
+  }
+  if (!segment.editable) element.classList.add('source-backed');
+  for(const item of element.querySelectorAll<HTMLElement>('li[data-checked]')){item.setAttribute('role','checkbox');item.setAttribute('aria-checked',item.dataset.checked!);item.tabIndex=0;}
+  enhance(element,segment,text=>update(segment,text));
+  applyHeadingAnchors(element,segment);
+  const visual = element.querySelector('img,svg,figure,table,pre,.md-toc,.md-comment-block,.frontmatter-card,.math-block,.admonition,.md-alert');
+  if (!element.textContent?.trim() && !visual) renderRawPreview(element,segment);
   element.dataset.rendered = 'true';
+}
+function renderRawPreview(element:HTMLElement,segment:Segment) {
+  element.classList.add('source-backed');
+  const label = document.createElement('small'); label.textContent = 'Markdown source · Click to edit';
+  const raw = document.createElement('pre'); raw.className = 'raw-preview'; raw.textContent = segment.text;
+  element.append(label,raw);
+}
+function applyHeadingAnchors(element:HTMLElement,segment:Segment) {
+  const slug = headingSlugs.get(segment.id);
+  if (!slug) return;
+  element.querySelectorAll<HTMLElement>('h1,h2,h3,h4,h5,h6').forEach((heading,index) => {
+    heading.id = index === 0 ? slug : `${slug}-${index + 1}`;
+  });
+  element.dataset.headingSlug = slug;
+}
+function refreshMarkdownContext() {
+  const toc = tocFromSegments(segmentOrder);
+  const abbreviations = collectAbbreviations(segmentOrder.map(segment => segment.text));
+  markdownEnv = {references: collectReferences(segmentOrder.map(segment => segment.text)), toc, abbreviations};
+  const abbrNames = Object.keys(abbreviations);
+  const abbrPattern = abbrNames.length ? new RegExp(`\\b(?:${abbrNames.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`) : undefined;
+  anchorTargets.clear();
+  headingSlugs.clear();
+  for (const entry of toc) {
+    if (!entry.segmentId) continue;
+    const segment = segments.get(entry.segmentId);
+    if (!segment) continue;
+    anchorTargets.set(entry.slug, segment);
+    headingSlugs.set(entry.segmentId, entry.slug);
+  }
+  for (const [id, element] of elements) {
+    const segment = segments.get(id);
+    if (!segment || active?.element === element) continue;
+    applyHeadingAnchors(element, segment);
+    if (/\]\[|^\s*\[toc\]\s*$|^\*\[[^\]]+\]:/im.test(segment.text) || abbrPattern?.test(segment.text)) render(element, segment);
+  }
 }
 function mountChunk(chunk:HTMLElement) {
   if (chunk.dataset.mounted) return;
@@ -141,7 +202,12 @@ function update(segment:Segment,text:string) {
     const element = elements.get(current.id)!;
     if (element && element !== active?.element) render(element,current);
   }
+  if (needsContextRefresh(before, text)) contextPending = true;
   send({type:'edit',uri:segment.sourceUri,pieceId:segment.pieceId,before,text,origin});
+}
+let contextPending = false;
+function needsContextRefresh(...values: string[]) {
+  return values.some(value => /^ {0,3}#{1,6}\s|^ {0,3}\[[^\]]+\]:|^ {0,3}\*\[[^\]]+\]:|^ {0,3}\[toc\]\s*$|^[^\r\n]+\r?\n {0,3}(?:=+|-+)\s*$/im.test(value));
 }
 function deactivate() {
   if (!active) return;
@@ -150,6 +216,10 @@ function deactivate() {
   previous.element.classList.remove('editing');
   render(previous.element,previous.segment);
   syncToolbar();
+  if (contextPending) {
+    contextPending = false;
+    refreshMarkdownContext();
+  }
 }
 function activate(element:HTMLElement,segment:Segment,raw = false) {
   if (readOnly || element.dataset.large==='true') return;
@@ -217,13 +287,53 @@ function activate(element:HTMLElement,segment:Segment,raw = false) {
     activate(element,segment,true);
   }
 }
+function scrollElementToToolbar(element: HTMLElement) {
+  const align = () => {
+    const delta = element.getBoundingClientRect().top - toolbarBottom();
+    if (Math.abs(delta) > 1) window.scrollBy(0, delta);
+  };
+  align();
+  requestAnimationFrame(() => { align(); requestAnimationFrame(align); });
+  setTimeout(align, 120);
+}
+function scrollToHash(hash: string) {
+  let id = hash.replace(/^#/, '');
+  try { id = decodeURIComponent(id); } catch { /* Keep the raw fragment. */ }
+  const heading = anchorTargets.get(id);
+  if (heading) { jump(heading, undefined, true); return; }
+  const target = document.getElementById(id);
+  if (target) { scrollElementToToolbar(target); return; }
+  const footnote = /^fn-(.+)$/.exec(id);
+  if (footnote) {
+    const label = footnote[1];
+    const segment = segmentOrder.find(item => item.text.includes(`[^${label}]:`) || item.text.includes(`[^${label}]`));
+    if (segment) jump(segment, undefined, true);
+  }
+}
 root.addEventListener('click',event => {
   const target = event.target as HTMLElement;
+  const wikilink = target.closest<HTMLElement>('[data-wikilink]');
+  if (wikilink) {
+    event.preventDefault();
+    const element = wikilink.closest<HTMLElement>('.segment');
+    const source = element ? segments.get(element.dataset.id!) : undefined;
+    if (source) send({type:'wikilink',target:wikilink.dataset.wikilink,uri:source.sourceUri});
+    return;
+  }
+  const toc = target.closest<HTMLElement>('[data-toc-segment]');
+  if (toc) {
+    event.preventDefault();
+    const segment = segments.get(toc.dataset.tocSegment!);
+    if (segment) jump(segment, undefined, true);
+    return;
+  }
   const link = target.closest('a');
   if (link) {
     event.preventDefault();
+    const href = link.getAttribute('href') ?? '';
+    if (href.startsWith('#')) { scrollToHash(href); return; }
     const element = link.closest<HTMLElement>('.segment');
-    if (element) send({type:'link',href:link.getAttribute('href'),uri:segments.get(element.dataset.id!)!.sourceUri});
+    if (element) send({type:'link',href,uri:segments.get(element.dataset.id!)!.sourceUri});
     return;
   }
   const element = target.closest<HTMLElement>('.segment');
@@ -824,9 +934,10 @@ window.addEventListener('message',event => {
     const savedDraft = active?.area?.value;
     generation = message.generation;
     readOnly = !!message.readOnly || userReadOnly;documentTitle=message.title;sourceFeedback();
-    deactivate(); observer.disconnect(); segments = new Map();segmentOrder=[];segmentIndices.clear(); navigator.reset(); ownership = new Map(); elements.clear(); chunkData.clear(); segmentChunks.clear(); root.replaceChildren();
+    deactivate(); contextPending=false; observer.disconnect(); segments = new Map();segmentOrder=[];segmentIndices.clear(); navigator.reset(); ownership = new Map(); elements.clear(); chunkData.clear(); segmentChunks.clear(); root.replaceChildren(); markdownEnv={};anchorTargets.clear();headingSlugs.clear();
     document.title = message.title;
     appendSegments(message.segments);
+    refreshMarkdownContext();
     // Paint the first screen synchronously; parse the rest only near the viewport.
     const firstChunk = chunkData.keys().next().value;
     if (firstChunk) mountChunk(firstChunk);
@@ -840,7 +951,7 @@ window.addEventListener('message',event => {
     if (message.generation === generation) {
       appendSegments(message.segments);
     }
-  } else if(message.type==='index-complete'&&message.generation===generation){restorePosition();
+  } else if(message.type==='index-complete'&&message.generation===generation){refreshMarkdownContext();restorePosition();
   } else if(message.type==='pieces'){
     const affected=new Set([...message.removed,...message.updated.map((piece:any)=>piece.id)]);
     if(active&&active.segment.sourceUri===message.uri&&affected.has(active.segment.pieceId)){restoration=joinRestoration??{uri:active.segment.sourceUri,pieceId:active.segment.pieceId,id:active.segment.id,text:active.segment.text,top:active.element.getBoundingClientRect().top,position:active.view?.state.selection.from??1,focus:true};deactivate();}joinRestoration=undefined;
@@ -849,7 +960,7 @@ window.addEventListener('message',event => {
       const update=message.updated.find((piece:any)=>piece.id===segment.pieceId);if(update){segment.text=update.raw;segment.sourceVersion=message.version;navigator.index(segment);const element=elements.get(segment.id);if(element)render(element,segment);}
       for(const item of message.added.filter((item:any)=>item.after===segment.pieceId)){const addition:Segment={...segment,id:segment.includeInstanceId+':'+item.piece.id,pieceId:item.piece.id,text:item.piece.raw,editable:item.piece.editable,blockType:item.piece.blockType};segments.set(addition.id,addition);segmentChunks.set(addition.id,chunk);list.splice(list.indexOf(segment)+1,0,addition);segmentOrder.splice(segmentOrder.indexOf(segment)+1,0,addition);const element=elements.get(segment.id);if(element)element.after(makeSegment(addition));navigator.index(addition);}
     }
-    segmentOrder=segmentOrder.filter(segment=>segments.has(segment.id));segmentIndices.clear();segmentOrder.forEach((segment,index)=>segmentIndices.set(segment.id,index));ownership=new Map();for(const segment of segmentOrder){const key=ownerKey(segment);const entries=ownership.get(key)??[];entries.push(segment);ownership.set(key,entries);}navigator.reorder(segmentOrder.map(segment=>segment.id));restorePosition();
+    segmentOrder=segmentOrder.filter(segment=>segments.has(segment.id));segmentIndices.clear();segmentOrder.forEach((segment,index)=>segmentIndices.set(segment.id,index));ownership=new Map();for(const segment of segmentOrder){const key=ownerKey(segment);const entries=ownership.get(key)??[];entries.push(segment);ownership.set(key,entries);}navigator.reorder(segmentOrder.map(segment=>segment.id));refreshMarkdownContext();restorePosition();
   } else if (message.type === 'patch') {
     if (message.origin === origin) return;
     for (const segment of ownership.get(`${message.uri}::${message.pieceId}`) ?? []) {
@@ -867,6 +978,7 @@ window.addEventListener('message',event => {
         }
       } else render(element,segment);
     }
+    refreshMarkdownContext();
   } else if (message.type === 'status') {
     if(message.history){historyState=message.history;syncToolbar();}
     const dirty=Array.isArray(message.dirty)?message.dirty.length:0;
@@ -884,22 +996,26 @@ window.addEventListener('message',event => {
       container.append(row);
     }
   } else if (message.type === 'benchmark') {
+    const percentile = (values:number[]) => values.sort((a,b) => a-b)[Math.floor(values.length*.95)];
     void (async () => {
-      const first = [...segments.values()].find(segment => segment.editable && !segment.error && segment.text.trim());
-      if (!first) return;
-      mountChunk(segmentChunks.get(first.id)!); activate(elements.get(first.id)!,first);
-      longTasks = [];
-      const input:number[] = [], scroll:number[] = [];
-      for (let i=0;i<40;i++) {
-        const start = performance.now(); document.execCommand('insertText',false,'a');
-        await new Promise(requestAnimationFrame); input.push(performance.now()-start);
+      try {
+        const first = [...segments.values()].find(segment => segment.editable && !segment.error && segment.text.trim());
+        if (!first) throw new Error('No editable block for benchmark.');
+        mountChunk(segmentChunks.get(first.id)!); activate(elements.get(first.id)!,first);
+        longTasks = [];
+        const input:number[] = [], scroll:number[] = [];
+        for (let i=0;i<40;i++) {
+          const start = performance.now(); document.execCommand('insertText',false,'a');
+          await new Promise(requestAnimationFrame); input.push(performance.now()-start);
+        }
+        for (let i=0;i<40;i++) {
+          const start = performance.now(); window.scrollBy(0,Math.min(innerHeight,700));
+          await new Promise(requestAnimationFrame); scroll.push(performance.now()-start);
+        }
+        send({type:'benchmark-result',result:{inputP95Ms:percentile(input),scrollP95Ms:percentile(scroll),maxLongTaskMs:Math.max(0,...longTasks)}});
+      } catch (reason) {
+        send({type:'benchmark-result',result:{inputP95Ms:0,scrollP95Ms:0,maxLongTaskMs:0,error:String(reason)}});
       }
-      for (let i=0;i<40;i++) {
-        const start = performance.now(); window.scrollBy(0,Math.min(innerHeight,700));
-        await new Promise(requestAnimationFrame); scroll.push(performance.now()-start);
-      }
-      const percentile = (values:number[]) => values.sort((a,b) => a-b)[Math.floor(values.length*.95)];
-      send({type:'benchmark-result',result:{inputP95Ms:percentile(input),scrollP95Ms:percentile(scroll),maxLongTaskMs:Math.max(0,...longTasks)}});
     })();
   } else if (message.type === 'error') error(message.message);
 });

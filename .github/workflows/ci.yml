@@ -41,8 +41,13 @@ jobs:
           "VSCODE_EXECUTABLE=$(Join-Path $editorDirectory 'Code.exe')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - run: npm run test:host
         if: runner.os == 'Windows'
-      - run: node scripts/test-host.mjs markdownup-win32-x64-0.3.0.vsix
+      - name: Test installed VSIX
         if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vsix = Get-ChildItem -Filter 'markdownup-win32-x64-*.vsix' | Select-Object -First 1
+          if (-not $vsix) { throw 'Packaged VSIX was not found.' }
+          node scripts/test-host.mjs $vsix.FullName
       - run: npm run release:gate
         if: runner.os == 'Windows' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-')
       - uses: actions/upload-artifact@v4

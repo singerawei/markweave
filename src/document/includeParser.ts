@@ -1,9 +1,9 @@
-import MarkdownIt from 'markdown-it';
+import {markdownTokenizer} from '../shared/markdown';
 import type { SourcePiece } from '../shared/types';
 
 // Token line maps provide block boundaries without round-tripping any Markdown.
 // HTML is tokenized but never executed. Imports are recognized only at top level.
-const tokenizer = new MarkdownIt({ html: true, linkify: false });
+const tokenizer = markdownTokenizer(true);
 const directive = /^ {0,3}(?:@import\s+"([^"\r\n]+)"[ \t]*|<!--[ \t]*@import\s+"([^"\r\n]+)"[ \t]*-->[ \t]*)$/;
 export function importPath(line: string): string | undefined {
   const match = directive.exec(line.replace(/(?:\r\n|\r|\n)$/, ''));
@@ -63,6 +63,7 @@ export function parsePieces(text: string): SourcePiece[] {
 
 function unsupported(raw: string): boolean {
   // Preserve extensions and reference syntax that the visual serializer cannot own.
+  // These blocks are still rich-rendered; clicking them edits the original source.
   const withoutTasks = raw.replace(/^(\s*(?:[-*+]|\d+\.)\s+)\[[ xX]\] /gm,'$1');
-  return /(\[\^[^\]]+\]|\[\[[^\]]+\]\]|\$\$|^\s*\[[^\]]+\]:|\]\[[^\]]*\]|\[[^\]]+\](?!\()|<\/?[A-Za-z!][^>]*>|^\s*:::|^\s*@import\b)/m.test(withoutTasks);
+  return /(\[\^[^\]]+\]|\[\[[^\]]+\]\]|\$\$|(?<!\\)\$[^$\r\n]+\$|\\[()[\]]|^\s*\[[^\]]+\]:|\]\[[^\]]*\]|\[[^\]]+\](?!\()|<\/?(?!https?:|mailto:|ftp:)[A-Za-z!][^>]*>|^\s*:::|^\s*@import\b|^\s*>\s*\[!|^[ \t]*!!![ \t]|^[ \t]*%%|%%[^%\r\n]+%%|^[ \t]*:[ \t]+\S|^\*\[[^\]]+\]:[ \t]*|:[a-z][a-z0-9_+-]*:)/mi.test(withoutTasks);
 }

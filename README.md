@@ -4,7 +4,7 @@
 
 MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑的可视化体验。它支持 `@import` 跨文件组合；在同一篇连续文档中编辑被引用内容时，保存只会写回真正变化的源文件。无需账号、数据库、网络或浏览器。
 
-> 当前版本：`0.3.0`（Windows x64 开发版）。核心流程与自动化测试通过；稳定发布所需的完整人工/性能验收仍在收集中。
+> 当前版本：`1.0.0`（Windows x64 预览版）。核心流程与自动化测试通过；稳定发布所需的完整人工/性能验收仍在收集中。
 
 ## 功能特性
 
@@ -17,7 +17,31 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 - **Mermaid 与代码块**：Mermaid 使用本地 Chromium 渲染、预热点、缓存与过期请求取消；图表和代码块各自只有一个操作菜单。
 - **长文档友好**：分批传输、视口附近按需渲染、远处卸载 DOM；超出编辑上限的块保留完整原文并提供 Text Editor 入口。
 - **PDF 导出**：包含未保存修改和完整 Include 内容，支持纸张、边距、字号、页眉页脚、页码、H1 分页与预览。
-- **本地优先**：无遥测、无网络请求、无账号；主题跟随 VS Code，支持浅色、深色和高对比度。
+- **扩展 Markdown 渲染**：GFM 自动链接、引用式链接、脚注、Alerts/Callouts、Admonitions、数学公式、定义列表、TOC、`==高亮==`、上下标、Emoji、Wiki 链接、注释、缩写和安全 HTML 子集。
+- **本地优先**：无遥测、无账号；主题跟随 VS Code，支持浅色、深色和高对比度。远程图片按你的选择打开即加载，其他内容不会主动请求网络。
+
+## Markdown 兼容性
+
+| 语法 | 支持 |
+| --- | --- |
+| CommonMark 标题、段落、强调、行内代码、引用、列表、代码块、分隔线、转义/实体 | ✅ 可编辑 |
+| GFM 表格与对齐、任务列表、删除线、尖括号/裸 URL 自动链接 | ✅ 可编辑 |
+| 引用式链接 `[text][ref]` + 链接定义 | ✅ 富渲染，源码编辑 |
+| 脚注 `[^1]` / `[^1]: ...` | ✅ 富渲染，源码编辑 |
+| GitHub Alerts / Obsidian Callouts `> [!NOTE]` | ✅ 富渲染，支持自定义标题 |
+| Admonitions `!!! note "Title"` | ✅ 富渲染，源码编辑 |
+| 数学 `$...$`、`$$...$$` | ✅ KaTeX MathML 渲染，源码编辑 |
+| 定义列表、缩写、`[TOC]` | ✅ 富渲染，源码编辑 |
+| `==高亮==`、`H~2~O`、`x^2^` | ✅ 可编辑 |
+| Emoji `:smile:` | ✅ 富渲染，源码编辑 |
+| Wikilink `[[Page]]`、嵌入 `![[Page]]` | ✅ 可点击打开；嵌入以卡片呈现，不做全文转嵌 |
+| Obsidian 注释 `%%...%%` | ✅ 内容隐藏，仅保留定位标记 |
+| HTML 安全子集（`kbd`、`mark`、`details`、`sub`、`sup` 等） | ✅ sanitized 渲染；script/style/事件属性/危险协议移除 |
+| Frontmatter | ✅ 元数据卡片；保留原文，点击进入源码编辑 |
+| Mermaid | ✅ 本地 Chromium 渲染 |
+| 远程图片 | ✅ 打开即加载（需网络；PDF 导出时下载并内嵌） |
+
+复杂扩展采用“富渲染 + 点击源码编辑”，避免序列化丢失原始语义；标准 GFM 与 `==高亮==`/上下标保持完整可视化编辑。
 
 ## 安装
 
@@ -25,7 +49,7 @@ MarkdownUP 让 `.md` 文件保持为唯一数据源，同时提供点击即编�
 
 安装包作为 GitHub Release 资源提供，不直接提交到 Git 仓库，因为 VSIX 约 125 MB（内含 Mermaid/PDF 使用的 Chromium 引擎）。
 
-1. 打开 [GitHub Releases](https://github.com/singerawei/markdownup/releases)，下载 `markdownup-win32-x64-0.3.0.vsix`。
+1. 打开 [GitHub Releases](https://github.com/singerawei/markdownup/releases)，下载 `markdownup-win32-x64-1.0.0.vsix`。
 2. 在 VS Code 中打开扩展视图，点击 **… → Install from VSIX…**，选择下载的文件。
 3. 重新加载 VS Code。
 4. 右键任意 `.md` 文件，选择 **Open With → Modular Markdown Editor**。
@@ -42,7 +66,7 @@ npx playwright install chromium-headless-shell
 npm run package
 ```
 
-生成的 `markdownup-win32-x64-0.3.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
+生成的 `markdownup-win32-x64-1.0.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
 
 ## 使用教程
 
@@ -83,6 +107,26 @@ Mermaid 图表渲染完成后，点击 **Diagram actions** 可复制、编辑、
 
 打开 **More → Export PDF**，选择纸张、边距、字号、页眉页脚和页码，可先预览再导出。导出会包含当前未保存内容，但不会自动保存 Markdown。
 
+### 7. 扩展 Markdown
+
+```markdown
+> [!NOTE]
+> GitHub 风格提示块。
+
+!!! tip "提示"
+    兼容 Typora 的 Admonition。
+
+Euler: $e^{i\pi}+1=0$
+
+[返回章节](#heading-two)
+
+脚注[^1]，高亮 ==重点==、H~2~O、x^2^、:rocket:。
+
+[TOC]
+```
+
+标准语法直接点击编辑。数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释和 HTML 子集以富渲染显示；点击该块会用源码编辑，保证原始 Markdown 不被改写。远程图片打开即加载；`<script>`、事件处理属性和危险链接会被安全过滤。
+
 ## 快捷键
 
 | 动作 | Windows / Linux | macOS |
@@ -104,7 +148,10 @@ Mermaid 图表渲染完成后，点击 **Diagram actions** 可复制、编辑、
 - 跨来源的复杂结构重排请在 Text Editor 中完成；单次编辑只归属一个源文件。
 - Save As 需要保持在同一目录，以维持相对 Include 语义。
 - 单块可视编辑上限：代码 128 KiB、正文 16 KiB、表格 200 行；超出后保留完整原文并引导到 Text Editor。
-- 当前提供的安装包为 Windows x64 开发版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。
+- 复杂扩展（数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释、安全 HTML、Frontmatter）采用富渲染 + 源码编辑；点击块即可编辑原始 Markdown，不丢源码。
+- Wiki 嵌入 `![[Page]]` 目前是点击卡片，不做 Obsidian 式全文转嵌。
+- 远程图片打开即加载；PDF 导出会下载远程图片并内嵌，因此导出时可能需要网络。
+- 当前提供的安装包为 Windows x64 1.0.0 预览版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。当前自动化冒烟与覆盖证据见 [docs/review-artifacts/response-1.0.0](docs/review-artifacts/response-1.0.0/README.md)。
 
 ## 项目结构
 
@@ -122,9 +169,9 @@ docs           使用说明、快捷键审计与验收记录
 
 ```sh
 npm ci
-npm run check        # lint + typecheck + 67 项核心测试 + build
+npm run check        # lint + typecheck + 75 项核心/扩展测试 + build
 npx playwright install chromium
-npm run test:ui      # 23 项 UI 测试
+npm run test:ui      # 24 项 UI 测试
 npm run test:host    # 真实 VS Code 宿主测试
 npm run bench
 npm run package

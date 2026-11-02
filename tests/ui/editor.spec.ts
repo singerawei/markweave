@@ -42,7 +42,7 @@ async function launch(page:Page,files:Record<string,string>) {
   await page.addScriptTag({path:resolve('dist/editor.js')});
   const segments = graph.segments.map(s => ({...s,resourceBase:'http://localhost/docs'}));
   const tick = Date.now(); await publish({type:'document',title:'MASTER.md',segments:segments.slice(0,128)});
-  await expect(page.locator('#document .segment').first()).toContainText('Architecture');
+  await expect(page.locator('#document .segment').first()).toBeVisible();
   const openMs = Date.now()-tick;
   for (let i=128;i<segments.length;i+=512) await publish({type:'append',segments:segments.slice(i,i+512)});
   return {repository,graph,writes,files,errors,publish,openMs,sent,preferences,get clipboard(){return clipboard;}};
@@ -197,6 +197,74 @@ test('high contrast chrome stays readable and the status bar is gone',async({pag
   await expect(page.locator('#notice .toast button').filter({hasText:'Details'})).toBeVisible();
   await page.locator('#notice .toast button').filter({hasText:'Details'}).click();
   await expect(page.getByRole('dialog')).toContainText('High contrast failure');
+});
+
+test('extended Markdown renders safely with resolvable references and TOC',async({page})=>{
+  const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=','base64');
+  await page.route('https://example.com/remote.png',route=>route.fulfill({status:200,contentType:'image/png',body:png}));
+  const text=[
+    '---','title: Demo','tags: [a, b]','---','',
+    '# Heading One','','## Heading Two','',
+    '[TOC]','',
+    '[go](#heading-two) and [reference][ref].','',
+    '[ref]: https://example.com "Reference title"','',
+    'Angle <https://example.com/angle> and bare https://example.com/bare.','',
+    '> [!NOTE]','> Alert body.','',
+    '> [!TIP] Custom title','> Tip body.','',
+    '!!! warning "Careful"','    Admonition body.','',
+    'Term',': Definition','',
+    'Inline math $e^{i\\pi}+1=0$.','',
+    '$$','\\int_0^1 x^2 dx','$$','',
+    '==highlight== H~2~O x^2^ :smile:','',
+    'Footnotes[^1].','','[^1]: Note body.','',
+    '[[Wiki Page]] and ![[Embed]]. Percent %%hidden comment%% here.','',
+    '%%','block hidden','%%','',
+    'API is an abbreviation.','','*[API]: Application Programming Interface','',
+    '<kbd>Ctrl</kbd> and <mark>safe</mark> and <details><summary>More</summary>Hidden</details>','',
+    '<script>window.PWNED=true</script>','',
+    '![remote](https://example.com/remote.png)',''
+  ].join('\n');
+  await launch(page,{[root]:text});
+  await expect(page.locator('.frontmatter-card')).toContainText('Demo');
+  await expect(page.locator('.md-toc')).toContainText('Heading Two');
+  await expect(page.locator('blockquote.md-alert-note')).toContainText('Alert body');
+  await expect(page.locator('blockquote.md-alert-tip')).toHaveAttribute('data-title','Custom title');
+  await expect(page.locator('.admonition')).toContainText('Admonition body');
+  await expect(page.locator('.segment:not(.frontmatter-block) dl dt')).toHaveText('Term');
+  await expect(page.locator('.katex math')).toHaveCount(2);
+  await expect(page.locator('mark').filter({hasText:'highlight'})).toBeVisible();
+  await expect(page.locator('sub')).toHaveText('2');
+  await expect(page.locator('sup:not(.footnote-ref)')).toHaveText('2');
+  await expect(page.locator('.footnote-ref')).toContainText('1');
+  await expect(page.locator('.footnote-def')).toContainText('Note body');
+  await expect(page.locator('.md-wikilink')).toContainText('Wiki Page');
+  await expect(page.locator('.md-embed')).toContainText('Embed');
+  await expect(page.locator('.md-comment')).toHaveCount(1);
+  await expect(page.locator('.md-comment-block')).toHaveCount(1);
+  await expect(page.locator('abbr[title="Application Programming Interface"]')).toHaveText('API');
+  await expect(page.locator('#document kbd')).toHaveText('Ctrl');
+  await expect(page.locator('mark').filter({hasText:'safe'})).toBeVisible();
+  await expect(page.locator('details summary')).toHaveText('More');
+  await expect(page.locator('a[href="https://example.com"]').filter({hasText:'reference'})).toBeVisible();
+  await expect(page.locator('a[href="https://example.com/bare"]')).toBeVisible();
+  const remote=page.locator('img[src="https://example.com/remote.png"]');
+  await expect(remote).toBeVisible();
+  expect(await remote.evaluate(image=>(image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  expect(await page.evaluate(()=>(window as any).PWNED)).toBeUndefined();
+
+  await page.getByRole('link',{name:'go',exact:true}).click();
+  await page.waitForTimeout(180);
+  const headingTop=await page.evaluate(()=>document.getElementById('heading-two')?.getBoundingClientRect().top);
+  expect(headingTop).toBeGreaterThanOrEqual(38);
+  await page.locator('.md-toc a').filter({hasText:'Heading Two'}).click();
+  await page.waitForTimeout(180);
+  expect(await page.evaluate(()=>Math.abs((document.getElementById('heading-two')?.getBoundingClientRect().top??0)-document.querySelector('#toolbar')!.getBoundingClientRect().bottom))).toBeLessThanOrEqual(4);
+
+  await page.locator('.math-block').click();
+  const source=page.locator('.segment textarea');
+  await expect(source).toBeVisible();
+  expect(await source.inputValue()).toContain('\\int_0^1');
+  await expect(page.locator('.ProseMirror')).toHaveCount(0);
 });
 
 test('navigation follows scroll with one aria-current and aligns the clicked heading',async({page})=>{

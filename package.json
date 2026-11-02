@@ -1,6 +1,6 @@
 {
   "name": "markdownup",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "displayName": "MarkdownUP — Modular Markdown Editor",
   "publisher": "markdownup",
   "engines": {
@@ -243,7 +243,7 @@
     "vscode:prepublish": "npm run build",
     "lint": "eslint src tests bench",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/core.test.ts tests/roundtrip.test.ts tests/review.test.ts tests/contract.test.ts tests/gates.test.mjs",
+    "test": "tsx --test tests/core.test.ts tests/roundtrip.test.ts tests/markdown-extensions.test.ts tests/review.test.ts tests/contract.test.ts tests/gates.test.mjs",
     "test:ui": "playwright test",
     "test:host": "node scripts/test-host.mjs",
     "bench": "tsx bench/run.ts",
@@ -259,7 +259,12 @@
     "markdown-preview",
     "includes",
     "mermaid",
-    "pdf"
+    "pdf",
+    "math",
+    "footnotes",
+    "gfm",
+    "typora",
+    "obsidian"
   ],
   "author": "singerawei",
   "license": "MIT",
@@ -274,8 +279,11 @@
   "description": "Local-first WYSIWYG Markdown with editable, source-owned includes and lazy large-document rendering.",
   "dependencies": {
     "highlight.js": "^11.12.0",
+    "katex": "0.18.2",
     "lucide": "^1.66.0",
     "markdown-it": "^15.0.3",
+    "markdown-it-deflist": "^3.0.0",
+    "markdown-it-emoji": "^3.0.0",
     "mermaid": "^11.17.2",
     "playwright-core": "^1.64.1",
     "prosemirror-commands": "^1.7.2",
@@ -286,13 +294,15 @@
     "prosemirror-schema-list": "^1.6.0",
     "prosemirror-state": "^1.4.4",
     "prosemirror-tables": "^1.8.5",
-    "prosemirror-view": "^1.42.9"
+    "prosemirror-view": "^1.42.9",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
     "@types/markdown-it": "^14.2.0",
     "@types/node": "^26.6.6",
+    "@types/sanitize-html": "^2.16.0",
     "@types/vscode": "1.100.0",
     "@vscode/vsce": "^3.9.2",
     "esbuild": "^0.28.2",
@@ -300,8 +310,5 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.1"
-  },
-  "overrides": {
-    "katex": "0.18.2"
   }
 }

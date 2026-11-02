@@ -11,12 +11,17 @@ const lists = basic.spec.nodes.update('list_item',{
 });
 export const schema = new Schema({
   nodes:lists.append(tableNodes({tableGroup:'block',cellContent:'inline*',cellAttributes:{align:{default:null,getFromDOM:dom => dom.style.textAlign || null,setDOMAttr:(value,attrs) => { if (value) attrs.style = `text-align:${value}`; }}}})),
-  marks:basic.spec.marks.addToEnd('strike',{parseDOM:[{tag:'s'},{tag:'del'}],toDOM:() => ['s',0]})
+  marks:basic.spec.marks
+    .addToEnd('strike',{parseDOM:[{tag:'s'},{tag:'del'}],toDOM:() => ['s',0]})
+    .addToEnd('highlight',{parseDOM:[{tag:'mark'}],toDOM:() => ['mark',0]})
+    .addToEnd('sub',{parseDOM:[{tag:'sub'}],toDOM:() => ['sub',0]})
+    .addToEnd('sup',{parseDOM:[{tag:'sup'}],toDOM:() => ['sup',0]})
 });
 export const parser = new MarkdownParser(schema,markdownTokenizer(),{
   ...defaultMarkdownParser.tokens,
   list_item:{block:'list_item',getAttrs:token => ({checked:token.attrGet('data-checked') === null ? null : token.attrGet('data-checked') === 'true'})},
-  s:{mark:'strike'},table:{block:'table'},thead:{ignore:true},tbody:{ignore:true},tr:{block:'table_row'},
+  s:{mark:'strike'},mark:{mark:'highlight'},sub:{mark:'sub'},sup:{mark:'sup'},
+  table:{block:'table'},thead:{ignore:true},tbody:{ignore:true},tr:{block:'table_row'},
   th:{block:'table_header',getAttrs:token => ({align:token.attrGet('style')?.replace('text-align:','') ?? null})},
   td:{block:'table_cell',getAttrs:token => ({align:token.attrGet('style')?.replace('text-align:','') ?? null})}
 });
@@ -43,4 +48,9 @@ export const serializer = new MarkdownSerializer({
     });
     state.closeBlock(node);
   }
-},{...defaultMarkdownSerializer.marks,strike:{open:'~~',close:'~~',mixable:true,expelEnclosingWhitespace:true}});
+},{...defaultMarkdownSerializer.marks,
+  strike:{open:'~~',close:'~~',mixable:true,expelEnclosingWhitespace:true},
+  highlight:{open:'==',close:'==',mixable:true,expelEnclosingWhitespace:true},
+  sub:{open:'~',close:'~',mixable:true,expelEnclosingWhitespace:true},
+  sup:{open:'^',close:'^',mixable:true,expelEnclosingWhitespace:true}
+});

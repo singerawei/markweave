@@ -138,6 +138,44 @@ body.focus-mode #toolbar,body.focus-mode #navigation,body.focus-mode .show-toolb
 .vscode-dark .hljs-string{color:#addb67}
 .vscode-dark .hljs-title{color:#82aaff}
 
+/* GFM/Typora/Obsidian rendering extensions. */
+mark{background:var(--vscode-editor-findMatchHighlightBackground,#fff2a8);color:inherit;padding:0 .08em;border-radius:2px}
+sub,sup{line-height:0}
+dl{margin:12px 0}
+dt{font-weight:700;margin-top:6px}
+dd{margin:0 0 8px 24px}
+.math-block{overflow-x:auto;margin:12px 0;text-align:center}
+.math-inline,.katex{font-size:1.04em}
+.math-error{color:var(--vscode-errorForeground,#c62828)}
+.md-alert{margin:12px 0;padding:10px 14px;border-left:4px solid var(--vscode-textLink-foreground,#2f6fb3);background:var(--vscode-textBlockQuote-background,#f2f7fc);border-radius:5px}
+.md-alert::before{content:attr(data-title);display:block;font-weight:700;margin-bottom:4px}
+.md-alert-warning,.md-alert-caution{border-left-color:var(--vscode-editorWarning-foreground,#c77700);background:color-mix(in srgb,var(--vscode-editorWarning-foreground,#c77700) 8%,transparent)}
+.md-alert-important{border-left-color:#8a3ffc}.md-alert-tip,.md-alert-success{border-left-color:var(--vscode-testing-iconPassed,#2e7d32)}.md-alert-danger,.md-alert-bug{border-left-color:var(--vscode-errorForeground,#c62828)}
+.admonition{margin:12px 0;padding:10px 14px;border:1px solid var(--vscode-widget-border,#ccd5df);border-radius:6px;background:var(--vscode-textBlockQuote-background,#f7f9fb)}
+.admonition-title{font-weight:700;margin-bottom:6px}
+.md-toc{margin:12px 0;padding:10px 14px;border:1px solid var(--vscode-widget-border,#d5dbe2);border-radius:6px;background:var(--vscode-textBlockQuote-background,#f8fafc)}
+.md-toc-title{font-weight:700;margin-bottom:6px}
+.md-toc ul{list-style:none;padding-left:0;margin:0}
+.md-toc li{margin:2px 0}
+.md-toc-level-2{padding-left:16px}.md-toc-level-3,.md-toc-level-4,.md-toc-level-5,.md-toc-level-6{padding-left:30px}
+.footnote-ref a{text-decoration:none;font-size:.8em;vertical-align:super}
+.footnote-def{border-top:1px solid var(--vscode-widget-border,#ccd5df);margin-top:10px;padding-top:6px;font-size:.92em}
+.footnote-label{font-weight:700;margin-right:6px}
+.footnote-body{display:inline-block;max-width:calc(100% - 2em)}
+.frontmatter-card{margin:12px 0 18px;padding:12px 16px;border:1px solid var(--vscode-widget-border,#ccd5df);border-radius:6px;background:var(--vscode-textBlockQuote-background,#f8fafc)}
+.frontmatter-title{font-weight:700;margin-bottom:8px}
+.frontmatter-card dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;margin:0}
+.frontmatter-card dt{font-weight:700;margin:0}
+.frontmatter-card dd{margin:0;overflow-wrap:anywhere}
+.md-wikilink{text-decoration:underline;text-decoration-style:dotted}
+.md-embed{display:inline-block;padding:1px 7px;border:1px dashed var(--vscode-widget-border,#8aa0b5);border-radius:4px;color:var(--vscode-textLink-foreground,#375d80);cursor:pointer}
+.md-comment{display:inline-block;width:.55em;height:.55em;margin:0 .1em;border:1px dashed var(--vscode-descriptionForeground,#8a97a3);border-radius:2px;opacity:.55;vertical-align:middle}
+.md-comment-block{min-height:.55em;margin:4px 0;border-left:2px dashed var(--vscode-descriptionForeground,#8a97a3);opacity:.5}
+details{margin:10px 0;padding:8px 12px;border:1px solid var(--vscode-widget-border,#d5dbe2);border-radius:5px}
+summary{cursor:pointer;font-weight:600}
+.source-backed{cursor:text}
+.source-backed:hover{background:color-mix(in srgb,var(--vscode-editor-foreground,#293241) 3%,transparent)}
+
 @media(max-width:600px){
   #toolbar{padding:5px 6px;gap:1px}
   #toolbar .block-style{flex-basis:84px;min-width:64px;max-width:84px}

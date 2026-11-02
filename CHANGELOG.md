@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0
+
+- Add GFM autolinks, cross-block reference links, footnotes, GitHub Alerts/Obsidian Callouts, admonitions, definition lists, TOC, abbreviations and Obsidian comments.
+- Add KaTeX MathML rendering for inline/block math, fully editable highlight and sub/superscript marks, emoji shortcodes, Wiki links/embeds and clickable internal anchors.
+- Add safe HTML allowlist rendering (kbd/mark/details/summary/etc.), frontmatter metadata cards, immediate remote image loading and PDF remote-image embedding.
+- Add document-wide reference/abbreviation/TOC context with deferred context rebuilds so typing and large-document scrolling stay responsive.
+- Extend PDF export to the new Markdown structures with sanitized HTML and MathML.
+- Add 8 extension rendering/security tests, an extended Markdown UI test, an extended PDF host fixture and safe-HTML coverage (75 core tests, 24 UI tests).
+
 ## 0.3.0
 
 - Follow the document while scrolling: exactly one current heading, binary-search heading tracking, auto-scroll inside the navigation panel and ±4px jump alignment.

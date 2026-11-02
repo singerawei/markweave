@@ -114,6 +114,13 @@ export async function run() {
   pdfDoc.repository.apply([{uri:payment.uri,pieceId:diagramPiece.id,before:diagramPiece.raw,after:'![Missing](./does-not-exist.png)\n'}]);
   await assert.rejects(provider.exportToPdf(pdfDoc,{format:'A4',landscape:false,margin:20,fontSize:14,header:'',footer:'',pageNumbers:true,headingBreak:false,preview:true}));
   pdfDoc.dispose();await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+  console.log("HOST_STAGE pdf-extended");
+  const extendedPath=join(directory,'extended.md');
+  await writeFile(extendedPath,'---\ntitle: Extended\n---\n\n# Extended\n\n## Section\n\n[TOC]\n\n> [!NOTE]\n> Alert body.\n\n!!! tip "Hint"\n    Tip body.\n\nTerm\n: Definition\n\nMath $x^2$ and\n\n$$\n\\int_0^1 x^2 dx\n$$\n\n==hi== H~2~O x^2^ :smile:\n\nAPI works.\n\n*[API]: Application Programming Interface\n\nFoot[^1].\n\n[^1]: Note body.\n\n<kbd>Ctrl</kbd>\n');
+  const extendedDoc=await provider.openCustomDocument(vscode.Uri.file(extendedPath),{backupId:undefined,untitledDocumentData:undefined});await extendedDoc.graph.build();extendedDoc.trackSources();
+  const extendedPdf=await provider.exportToPdf(extendedDoc,{format:'A4',landscape:false,margin:20,fontSize:14,header:'',footer:'',pageNumbers:true,headingBreak:false,preview:true});
+  const extendedBytes=await readFile(extendedPdf!.fsPath);assert.equal(extendedBytes.subarray(0,4).toString(),'%PDF');assert.ok(extendedBytes.length>2000);
+  extendedDoc.dispose();
   await writeFile(child,'# Child\n\nStripe\n');
   console.log("HOST_STAGE png");
   for(let i=0;i<20;i++){const png=await(provider as any).diagrams.png(`flowchart LR\n A["中文 <b>text ${i}</b>"] --> B[End]`,false);assert.equal(Buffer.from(png).subarray(0,8).toString('hex'),'89504e470d0a1a0a');if(i===0)await writeFile(join(process.env.MARKDOWNUP_REPORT_DIR!,'diagram-export.png'),png);}
@@ -127,12 +134,16 @@ export async function run() {
   const results = [];
   for (const name of ['B-1MB.md','C-5MB.md','D-100-includes/MASTER.md','M-1MB-20-diagrams.md','M-5MB-100-diagrams.md','M-composite/MASTER.md']) {
     const file = join(corpus,name);
+    console.log('HOST_BENCH_CASE',name);
     await vscode.commands.executeCommand('vscode.openWith',vscode.Uri.file(file),'markdownup.editor');
     let live:CompositeDocument | undefined;
     await wait(() => { live = [...liveDocuments].find(doc => doc.uri.fsPath.toLowerCase() === file.toLowerCase()); return live?.metrics.editable !== undefined; });
+    console.log('HOST_BENCH_EDITABLE',name,live!.metrics);
     if(name.startsWith('M-'))await wait(()=>live!.metrics.diagram!==undefined);
+    console.log('HOST_BENCH_DIAGRAM_DONE',name);
     for (const panel of live!.panels) await panel.webview.postMessage({type:'benchmark'});
     await wait(() => !!live!.benchmark);
+    console.log('HOST_BENCH_DONE',name,live!.benchmark);
     const start = Date.now(); await provider.saveCustomDocument(live!); const saveMs = Date.now()-start;
     results.push({case:name,readableMs:live!.metrics.readable,editableMs:live!.metrics.editable,diagramMs:live!.metrics.diagram,saveMs,...live!.benchmark});
     await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
