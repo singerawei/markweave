@@ -65,5 +65,5 @@ function unsupported(raw: string): boolean {
   // Preserve extensions and reference syntax that the visual serializer cannot own.
   // These blocks are still rich-rendered; clicking them edits the original source.
   const withoutTasks = raw.replace(/^(\s*(?:[-*+]|\d+\.)\s+)\[[ xX]\] /gm,'$1');
-  return /(\[\^[^\]]+\]|\[\[[^\]]+\]\]|\$\$|(?<!\\)\$[^$\r\n]+\$|\\[()[\]]|^\s*\[[^\]]+\]:|\]\[[^\]]*\]|\[[^\]]+\](?!\()|<\/?(?!https?:|mailto:|ftp:)[A-Za-z!][^>]*>|^\s*:::|^\s*@import\b|^\s*>\s*\[!|^[ \t]*!!![ \t]|^[ \t]*%%|%%[^%\r\n]+%%|^[ \t]*:[ \t]+\S|^\*\[[^\]]+\]:[ \t]*|:[a-z][a-z0-9_+-]*:)/mi.test(withoutTasks);
+  return /(\[\^[^\]]+\]|\[\[[^\]]+\]\]|\$\$|(?<!\\)\$[^$\r\n]+\$|\\[()[\]]|^\s*\[[^\]]+\]:|\]\[[^\]]*\]|\[[^\]]+\](?!\()|<\/?(?!https?:|mailto:|ftp:)[A-Za-z!][^>]*>|^\s*:::|^\s*@import\b|^\s*>\s*\[!|^[ \t]*!!![ \t]|^[ \t]*%%|%%[^%\r\n]+%%|^[ \t]*:[ \t]+\S|^\*\[[^\]]+\]:[ \t]*)/mi.test(withoutTasks);
 }

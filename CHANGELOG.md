@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.1.0
+
+- Rebuild document typography: full-width reading layout, larger readable body text, distinct H1–H6 scale, heading rules, improved lists/quotes/links/images.
+- Redesign code blocks and syntax colors for C++, Python and other languages; style language/action bars and inline code.
+- Add table scroll shells, header styling, zebra rows and hover states; wrap tables without changing layout.
+- Show heading level badges, indentation and distinct sizes in the outline panel.
+- Make common GFM tables (including emoji cells) editable in ProseMirror instead of falling back to source.
+- Add in-place rendered `contenteditable` editing for safe HTML blocks; HTML no longer turns into an inline raw textarea.
+- Replace inline raw editors for complex Markdown with a rendered block editor (live preview + source) and source cards for definitions/unsafe HTML; clicking TOC opens navigation.
+- Improve PDF print typography, headings, code, tables and syntax colors.
+- Add heading hierarchy, table/HTML WYSIWYG and complex-block visual editor tests (76 core, 26 UI).
+
 ## 2.0.0
 
 - **Rebrand:** MarkdownUP is now **MarkWeave**, with a new logo, GitHub repository, extension ID, command/settings prefix, custom-editor view type and VSIX naming.

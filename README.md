@@ -6,7 +6,7 @@
 
 MarkWeave 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑的可视化体验。它支持 `@import` 跨文件组合；在同一篇连续文档中编辑被引用内容时，保存只会写回真正变化的源文件。无需账号、数据库或浏览器；除你选择加载的远程图片外，不会主动请求网络。
 
-> 当前版本：`2.0.0`（MarkWeave 品牌版，Windows x64 预览版）。核心流程与自动化测试通过；稳定发布所需的完整人工/性能验收仍在收集中。
+> 当前版本：`2.1.0`（MarkWeave，Windows x64 预览版）。重做了排版/标题层级、全宽阅读布局和可视化块编辑；稳定发布所需的完整人工/性能验收仍在收集中。
 >
 > 从 MarkdownUP 升级：这是完整改名版本，扩展 ID 和设置前缀已变更；需要安装新的 VSIX，并按需重新设置选项。旧版 Release 仍保留。
 
@@ -16,6 +16,8 @@ MarkWeave 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑
 - **可编辑 Includes**：嵌套与重复 `@import`，重复引用同步更新；保存只写目标源文件，未修改块和 Import 指令保留原文。
 - **可靠的源文件所有权**：循环/丢失 Include 局部报错，外部修改检测、冲突处理、热退出备份与恢复，多面板同步。
 - **导航与大纲**：Find / Outline 共用面板，标题随滚动高亮，点击结果精确对齐；Pin 固定导航并按文档保存。
+- **阅读排版**：全宽阅读布局、清晰的 H1–H6 层级、标题分隔线、Office 风格代码块、带斑马纹的表格、舒适的段落与列表间距。
+- **可视化编辑**：表格和行内格式在 ProseMirror 中原位编辑；安全 HTML 使用 rendered contenteditable；复杂扩展打开带实时预览的块编辑器，不再把正文变成内联原始文本。
 - **紧凑工具栏**：8 个一级控件；Insert 锚定菜单支持方向键/Home/End/Esc；工具栏可隐藏、可恢复、可进入专注模式。
 - **原生快捷键**：所有高频动作都是 VS Code 命令，可在 Keyboard Shortcuts 中重映射；tooltip 与 `aria-keyshortcuts` 平台化显示 Ctrl/Cmd。
 - **Mermaid 与代码块**：Mermaid 使用本地 Chromium 渲染、预热点、缓存与过期请求取消；图表和代码块各自只有一个操作菜单。
@@ -30,24 +32,24 @@ MarkWeave 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑
 | --- | --- |
 | CommonMark 标题、段落、强调、行内代码、引用、列表、代码块、分隔线、转义/实体 | ✅ 可编辑 |
 | GFM 表格与对齐、任务列表、删除线、尖括号/裸 URL 自动链接 | ✅ 可编辑 |
-| 引用式链接 `[text][ref]` + 链接定义 | ✅ 富渲染，源码编辑 |
-| 脚注 `[^1]` / `[^1]: ...` | ✅ 富渲染，源码编辑 |
-| GitHub Alerts / Obsidian Callouts `> [!NOTE]` | ✅ 富渲染，支持自定义标题 |
-| Admonitions `!!! note "Title"` | ✅ 富渲染，源码编辑 |
-| 数学 `$...$`、`$$...$$`、`\(...\)`、`\[...\]` | ✅ KaTeX MathML 渲染，源码编辑 |
-| 定义列表、缩写、`[TOC]` | ✅ 富渲染，源码编辑 |
+| 引用式链接 `[text][ref]` + 链接定义 | ✅ 富渲染；链接定义卡片 + 可视化块编辑器 |
+| 脚注 `[^1]` / `[^1]: ...` | ✅ 富渲染；带实时预览的块编辑器 |
+| GitHub Alerts / Obsidian Callouts `> [!NOTE]` | ✅ 富渲染，支持自定义标题和折叠 |
+| Admonitions `!!! note "Title"` | ✅ 富渲染；带实时预览的块编辑器 |
+| 数学 `$...$`、`$$...$$`、`\(...\)`、`\[...\]` | ✅ KaTeX MathML 渲染；带公式预览的块编辑器 |
+| 定义列表、缩写、`[TOC]` | ✅ 富渲染；带实时预览的块编辑器 |
 | `==高亮==`、`H~2~O`、`x^2^`（内部可嵌套强调） | ✅ 可编辑 |
 | 折叠 Callout `[!NOTE]-` / `[!TIP]+` | ✅ 可折叠 details |
 | `<details>` + Markdown 内容 | ✅ 内容按 Markdown 渲染并安全保留 |
-| Emoji `:smile:` | ✅ 富渲染，源码编辑 |
+| Emoji `:smile:` | ✅ 富渲染、可编辑 |
 | Wikilink `[[Page]]`、嵌入 `![[Page]]` | ✅ 可点击打开；嵌入以卡片呈现，不做全文转嵌 |
 | Obsidian 注释 `%%...%%` | ✅ 内容隐藏，仅保留定位标记 |
-| HTML 安全子集（`kbd`、`mark`、`details`、`sub`、`sup` 等） | ✅ sanitized 渲染；script/style/事件属性/危险协议移除 |
-| Frontmatter | ✅ 元数据卡片；保留原文，点击进入源码编辑 |
+| HTML 安全子集（`kbd`、`mark`、`details`、`sub`、`sup` 等） | ✅ sanitized 渲染；原位 contenteditable 编辑；script/style/事件属性/危险协议移除 |
+| Frontmatter | ✅ 元数据卡片；点击打开带预览的块编辑器 |
 | Mermaid | ✅ 本地 Chromium 渲染 |
 | 远程图片 | ✅ 打开即加载（需网络；PDF 导出时下载并内嵌） |
 
-复杂扩展采用“富渲染 + 点击源码编辑”，避免序列化丢失原始语义；标准 GFM 与 `==高亮==`/上下标保持完整可视化编辑。
+标准 GFM、表格、代码块、`==高亮==`/上下标与安全 HTML 保持原位可视化编辑；数学、脚注、Alerts、定义列表、TOC、Wiki、注释等复杂扩展打开带实时预览的块编辑器，块在文档中始终保持渲染态，不会切换为内联原始文本。
 
 ## 安装
 
@@ -55,7 +57,7 @@ MarkWeave 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑
 
 安装包作为 GitHub Release 资源提供，不直接提交到 Git 仓库，因为 VSIX 约 125 MB（内含 Mermaid/PDF 使用的 Chromium 引擎）。
 
-1. 打开 [GitHub Releases](https://github.com/singerawei/markweave/releases)，下载 `markweave-win32-x64-2.0.0.vsix`。
+1. 打开 [GitHub Releases](https://github.com/singerawei/markweave/releases)，下载 `markweave-win32-x64-2.1.0.vsix`。
 2. 在 VS Code 中打开扩展视图，点击 **… → Install from VSIX…**，选择下载的文件。
 3. 重新加载 VS Code。
 4. 右键任意 `.md` 文件，选择 **Open With → Modular Markdown Editor**。
@@ -72,7 +74,7 @@ npx playwright install chromium-headless-shell
 npm run package
 ```
 
-生成的 `markweave-win32-x64-2.0.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
+生成的 `markweave-win32-x64-2.1.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
 
 ## 使用教程
 
@@ -131,7 +133,7 @@ Euler: $e^{i\pi}+1=0$
 [TOC]
 ```
 
-标准语法直接点击编辑。数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释和 HTML 子集以富渲染显示；点击该块会用源码编辑，保证原始 Markdown 不被改写。远程图片打开即加载；`<script>`、事件处理属性和危险链接会被安全过滤。
+标准语法和表格直接点击编辑。安全 HTML 会在原位进入 rendered contenteditable 编辑；数学、脚注、Alerts、定义列表、TOC、Wiki 链接和注释会打开带实时预览的块编辑器，文档中的块始终保持渲染态，不会再变成内联原始文本。远程图片打开即加载；`<script>`、事件处理属性和危险链接会被安全过滤。
 
 ## 快捷键
 
@@ -154,10 +156,10 @@ Euler: $e^{i\pi}+1=0$
 - 跨来源的复杂结构重排请在 Text Editor 中完成；单次编辑只归属一个源文件。
 - Save As 需要保持在同一目录，以维持相对 Include 语义。
 - 单块可视编辑上限：代码 128 KiB、正文 16 KiB、表格 200 行；超出后保留完整原文并引导到 Text Editor。
-- 复杂扩展（数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释、安全 HTML、Frontmatter）采用富渲染 + 源码编辑；点击块即可编辑原始 Markdown，不丢源码。
+- 复杂扩展（数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释、安全 HTML、Frontmatter）使用渲染态块编辑器；点击不会再切换到内联原始文本。安全 HTML 支持原位 contenteditable，其余扩展提供实时预览与源码/字段编辑。
 - Wiki 嵌入 `![[Page]]` 目前是点击卡片，不做 Obsidian 式全文转嵌。
 - 远程图片打开即加载；PDF 导出会下载远程图片并内嵌，因此导出时可能需要网络。
-- 当前提供的安装包为 Windows x64 MarkWeave 2.0.0 预览版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。当前自动化冒烟与覆盖证据见 [docs/review-artifacts/response-2.0.0](docs/review-artifacts/response-2.0.0/README.md)。
+- 当前提供的安装包为 Windows x64 MarkWeave 2.1.0 预览版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。当前自动化冒烟与覆盖证据见 [docs/review-artifacts/response-2.1.0](docs/review-artifacts/response-2.1.0/README.md)。
 
 ## 项目结构
 
@@ -177,7 +179,7 @@ docs           使用说明、快捷键审计与验收记录
 npm ci
 npm run check        # lint + typecheck + 76 项核心/扩展测试 + build
 npx playwright install chromium
-npm run test:ui      # 24 项 UI 测试
+npm run test:ui      # 26 项 UI 测试
 npm run test:host    # 真实 VS Code 宿主测试
 npm run bench
 npm run package

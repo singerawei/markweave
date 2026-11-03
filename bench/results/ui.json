@@ -1,8 +1,8 @@
 {
   "scope": "Headless Chromium webview harness; excludes extension activation and VS Code IPC",
   "sizeMB": 5,
-  "openMs": 96,
+  "openMs": 157,
   "totalSegments": 127876,
   "initialRenderedSegments": 32,
-  "inputP95Ms": 13.300000011920929
+  "inputP95Ms": 12.300000011920929
 }

@@ -13,7 +13,7 @@ import { inputRules, textblockTypeInputRule, wrappingInputRule } from 'prosemirr
 import { tableEditing, goToNextCell,addRowAfter,addColumnAfter,deleteRow,deleteColumn,deleteTable,toggleHeaderRow } from 'prosemirror-tables';
 import { parser, schema, serializer, markdownTokenizer } from './schema';
 import { preserveEdges } from '../document/serializer';
-import { collectAbbreviations, collectReferences, type MarkdownEnv } from '../shared/markdown';
+import { collectAbbreviations, collectReferences, sanitizeHtmlFragment, type MarkdownEnv } from '../shared/markdown';
 import { tocFromSegments } from '../shared/headings';
 import { frontmatterHtml, isFrontmatter } from '../shared/frontmatter';
 import type { Segment } from '../shared/types';
@@ -29,7 +29,7 @@ const notice = document.querySelector<HTMLElement>('#notice')!;
 let segments = new Map<string,Segment>();
 let ownership = new Map<string,Segment[]>();
 const ownerKey = (segment:Segment) => `${segment.sourceUri}::${segment.pieceId}`;
-let active: {segment:Segment;view?:EditorView;area?:HTMLTextAreaElement;element:HTMLElement} | undefined;
+let active: {segment:Segment;view?:EditorView;area?:HTMLTextAreaElement;element:HTMLElement;htmlEditor?:HTMLElement;htmlBaseline?:string} | undefined;
 let readOnly = false; let userReadOnly=false; let documentTitle="";
 let historyState={undo:0,redo:0};
 let lastDirtyCount:number|undefined;
@@ -125,23 +125,47 @@ function render(element:HTMLElement,segment:Segment) {
   try {
     element.innerHTML = renderer.render(segment.text, markdownEnv);
   } catch {
-    renderRawPreview(element,segment);
+    renderSourceCard(element,segment);
     element.dataset.rendered = 'true';
     return;
   }
   if (!segment.editable) element.classList.add('source-backed');
+  wrapTables(element);
   for(const item of element.querySelectorAll<HTMLElement>('li[data-checked]')){item.setAttribute('role','checkbox');item.setAttribute('aria-checked',item.dataset.checked!);item.tabIndex=0;}
   enhance(element,segment,text=>update(segment,text));
   applyHeadingAnchors(element,segment);
-  const visual = element.querySelector('img,svg,figure,table,pre,.md-toc,.md-comment-block,.frontmatter-card,.math-block,.admonition,.md-alert');
-  if (!element.textContent?.trim() && !visual) renderRawPreview(element,segment);
+  const visual = element.querySelector('img,svg,figure,table,pre,.md-toc,.md-comment-block,.frontmatter-card,.math-block,.admonition,.md-alert,.source-notice,.reference-defs,.abbreviation-defs');
+  if (!element.textContent?.trim() && !visual) renderSourceCard(element,segment);
   element.dataset.rendered = 'true';
 }
-function renderRawPreview(element:HTMLElement,segment:Segment) {
+function wrapTables(container:HTMLElement) {
+  for (const table of container.querySelectorAll<HTMLTableElement>('table')) {
+    if (table.parentElement?.classList.contains('table-scroll')) continue;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-scroll';
+    table.replaceWith(wrapper);
+    wrapper.append(table);
+  }
+}
+function escapeText(value:string) {
+  return value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function renderSourceCard(element:HTMLElement,segment:Segment) {
   element.classList.add('source-backed');
-  const label = document.createElement('small'); label.textContent = 'Markdown source · Click to edit';
-  const raw = document.createElement('pre'); raw.className = 'raw-preview'; raw.textContent = segment.text;
-  element.append(label,raw);
+  const references = [...segment.text.matchAll(/^ {0,3}\[([^\]]+)\]:[ \t]*(\S+)/gm)];
+  if (references.length) {
+    element.classList.add('reference-defs');
+    element.innerHTML = `<div class="source-card"><div class="source-card-title">Link definitions</div><dl>${references.map(([,label,target])=>`<dt>${escapeText(label)}</dt><dd>${escapeText(target)}</dd>`).join('')}</dl><small>Click to edit</small></div>`;
+    return;
+  }
+  const abbreviations = [...segment.text.matchAll(/^\*\[([^\]]+)\]:[ \t]*(.*)$/gm)];
+  if (abbreviations.length) {
+    element.classList.add('abbreviation-defs');
+    element.innerHTML = `<div class="source-card"><div class="source-card-title">Abbreviations</div><dl>${abbreviations.map(([,label,title])=>`<dt>${escapeText(label)}</dt><dd>${escapeText(title)}</dd>`).join('')}</dl><small>Click to edit</small></div>`;
+    return;
+  }
+  element.classList.add('source-notice');
+  element.innerHTML = '<div class="source-card"><div class="source-card-title">Source-only block</div><small>This HTML or markup is kept safely out of the rendered layout. Click to edit with a live preview.</small></div>';
 }
 function applyHeadingAnchors(element:HTMLElement,segment:Segment) {
   const slug = headingSlugs.get(segment.id);
@@ -212,6 +236,20 @@ function needsContextRefresh(...values: string[]) {
 function deactivate() {
   if (!active) return;
   const previous = active;
+  if (previous.htmlEditor) {
+    const value = sanitizeHtmlFragment(previous.htmlEditor.innerHTML).trim();
+    const changed = value !== (previous.htmlBaseline ?? '');
+    active = undefined;
+    previous.element.classList.remove('editing','html-editing');
+    if (changed) update(previous.segment,value);
+    else render(previous.element,previous.segment);
+    syncToolbar();
+    if (contextPending) {
+      contextPending = false;
+      refreshMarkdownContext();
+    }
+    return;
+  }
   active.view?.destroy(); active = undefined;
   previous.element.classList.remove('editing');
   render(previous.element,previous.segment);
@@ -221,18 +259,115 @@ function deactivate() {
     refreshMarkdownContext();
   }
 }
-function activate(element:HTMLElement,segment:Segment,raw = false) {
+function canVisuallyEditHtml(element:HTMLElement,segment:Segment) {
+  if (!/<[a-z][\s\S]*>/i.test(segment.text)) return false;
+  if (element.querySelector('.source-card')) return false;
+  if (/(?<!\\)\$[^$\r\n]+\$|\$\$|\[\^|\[\[|%%|\[toc\]|^\s*>\s*\[!|^\s*!!!|^\s*\*\[[^\]]+\]:|^[ \t]*:[ \t]+\S/mi.test(segment.text)) return false;
+  return element.childElementCount > 0;
+}
+function activateHtmlEditor(element:HTMLElement,segment:Segment) {
+  deactivate();
+  const editor = document.createElement('div');
+  editor.className = 'html-visual-editor';
+  editor.contentEditable = 'true';
+  editor.spellcheck = false;
+  editor.setAttribute('role','textbox');
+  editor.setAttribute('aria-multiline','true');
+  editor.setAttribute('aria-label','Edit rendered HTML block');
+  while (element.firstChild) editor.append(element.firstChild);
+  const bar = document.createElement('div'); bar.className = 'html-edit-bar';
+  const label = document.createElement('span'); label.textContent = 'Visual HTML editing';
+  const done = document.createElement('button'); done.type = 'button'; done.textContent = 'Done';
+  const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = 'Cancel';
+  bar.append(label,done,cancel);
+  element.replaceChildren(bar,editor);
+  element.classList.add('editing','html-editing');
+  active = {segment,element,htmlEditor:editor,htmlBaseline:sanitizeHtmlFragment(editor.innerHTML).trim()};
+  sourceFeedback();
+  const finish = (save:boolean) => {
+    if (active?.element !== element || active.htmlEditor !== editor) return;
+    if (!save) active.htmlBaseline = sanitizeHtmlFragment(editor.innerHTML).trim();
+    deactivate();
+    element.focus({preventScroll:true});
+  };
+  done.onclick = () => finish(true);
+  done.onmousedown = event => event.preventDefault();
+  cancel.onclick = () => finish(false);
+  cancel.onmousedown = event => event.preventDefault();
+  editor.addEventListener('keydown',event => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); finish(false); }
+    else if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); finish(true); }
+  });
+  editor.focus();
+}
+function blockEditorTitle(segment:Segment) {
+  if (isFrontmatter(segment.text)) return 'Edit frontmatter';
+  if (/(^|[^\\])\$\$|\\\[/.test(segment.text)) return 'Edit math block';
+  if (/\$[^$\r\n]+\$|\\\(/.test(segment.text)) return 'Edit inline math';
+  if (/\[\^/.test(segment.text)) return 'Edit footnote';
+  if (/^\s*>\s*\[!/mi.test(segment.text)) return 'Edit callout';
+  if (/^\s*!!!/mi.test(segment.text)) return 'Edit admonition';
+  if (/^\s*\[toc\]\s*$/mi.test(segment.text)) return 'Table of contents';
+  if (/<[a-z]/i.test(segment.text)) return 'Edit HTML block';
+  return 'Edit Markdown block';
+}
+function openBlockEditor(element:HTMLElement,segment:Segment) {
+  deactivate();
+  const dialog = document.createElement('dialog');
+  dialog.className = 'block-editor-dialog';
+  const title = document.createElement('h2');
+  title.textContent = blockEditorTitle(segment);
+  const hint = document.createElement('p');
+  hint.className = 'block-editor-hint';
+  hint.textContent = 'The rendered block stays in the document. Edit the source here with a live preview, then apply.';
+  const grid = document.createElement('div'); grid.className = 'block-editor-grid';
+  const source = document.createElement('textarea'); source.className = 'block-editor-source'; source.value = segment.text; source.spellcheck = false; source.setAttribute('aria-label','Block source');
+  const preview = document.createElement('div'); preview.className = 'block-editor-preview'; preview.setAttribute('aria-label','Live preview');
+  grid.append(source,preview);
+  const actions = document.createElement('div'); actions.className = 'dialog-row';
+  const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = 'Cancel';
+  const apply = document.createElement('button'); apply.type = 'button'; apply.textContent = 'Apply';
+  actions.append(apply,cancel);
+  dialog.append(title,hint,grid,actions);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const paint = () => {
+    try {
+      preview.innerHTML = isFrontmatter(source.value) ? frontmatterHtml(source.value) : renderer.render(source.value,markdownEnv);
+      wrapTables(preview);
+    } catch (reason) { preview.textContent = String(reason); }
+  };
+  source.oninput = () => { clearTimeout(timer); timer = setTimeout(paint,120); };
+  const close = (accepted:boolean) => {
+    clearTimeout(timer);
+    const value = source.value;
+    dialog.close();
+    dialog.remove();
+    if (accepted && value !== segment.text) update(segment,value);
+    element.focus({preventScroll:true});
+  };
+  apply.onclick = () => close(true);
+  cancel.onclick = () => close(false);
+  source.addEventListener('keydown',event => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); close(true); }
+  });
+  dialog.addEventListener('cancel',event => { event.preventDefault(); close(false); });
+  document.body.append(dialog);
+  paint();
+  dialog.showModal();
+  source.focus();
+}
+function activate(element:HTMLElement,segment:Segment) {
   if (readOnly || element.dataset.large==='true') return;
   if (segment.error || active?.element === element) return;
-  deactivate(); element.replaceChildren(); element.classList.add('editing');
-  active = {segment,element}; sourceFeedback();
-  if (!segment.editable || raw) {
-    const area = document.createElement('textarea'); area.className = 'raw-editor'; area.value = segment.text;
-    area.setAttribute('aria-label','Raw Markdown block');
-    area.rows = Math.max(3,Math.min(25,segment.text.split('\n').length));
-    area.addEventListener('input',() => update(segment,area.value));
-    element.append(area); active.area = area; area.focus(); syncToolbar(); return;
+  deactivate();
+  if (!segment.editable) {
+    if (/^\s*\[toc\]\s*$/i.test(segment.text.trim())) { navigator.open('outline'); return; }
+    if (canVisuallyEditHtml(element,segment)) activateHtmlEditor(element,segment);
+    else openBlockEditor(element,segment);
+    return;
   }
+  element.replaceChildren(); element.classList.add('editing');
+  active = {segment,element}; sourceFeedback();
   try {
     const state = EditorState.create({schema,doc:parser.parse(segment.text),plugins:[
       inputRules({rules:[textblockTypeInputRule(/^(#{1,6})\s$/,schema.nodes.heading,match => ({level:match[1].length})),
@@ -283,8 +418,8 @@ function activate(element:HTMLElement,segment:Segment,raw = false) {
     });
     active.view = view; view.focus();syncToolbar();
   } catch (reason) {
-    active = undefined; error(`This block is protected as raw Markdown: ${String(reason)}`);
-    activate(element,segment,true);
+    active = undefined; error(`This block needs the visual block editor: ${String(reason)}`);
+    openBlockEditor(element,segment);
   }
 }
 function scrollElementToToolbar(element: HTMLElement) {
@@ -312,6 +447,7 @@ function scrollToHash(hash: string) {
 }
 root.addEventListener('click',event => {
   const target = event.target as HTMLElement;
+  if (active?.htmlEditor && active.element.contains(target)) return;
   const wikilink = target.closest<HTMLElement>('[data-wikilink]');
   if (wikilink) {
     event.preventDefault();
@@ -363,7 +499,7 @@ root.addEventListener('keydown',event => {
 document.addEventListener('keydown',event=>{
   if(!(event.ctrlKey||event.metaKey)||event.altKey)return;
   const key=event.key.toLowerCase();const target=event.target as HTMLElement;const local=!!target.closest('input,textarea,select,dialog');
-  if(key==='s'){event.preventDefault();event.stopPropagation();if(!document.querySelector('dialog[open]'))send({type:event.shiftKey?'save-as':'save'});return;}
+  if(key==='s'){event.preventDefault();event.stopPropagation();if(active?.htmlEditor)deactivate();if(!document.querySelector('dialog[open]'))send({type:event.shiftKey?'save-as':'save'});return;}
   if(['z','y'].includes(key)){if(local){event.stopPropagation();return;}event.preventDefault();event.stopPropagation();if(!readOnly)send({type:key==='y'||event.shiftKey?'redo':'undo'});}
 },true);
 document.querySelector('header')?.remove(); document.querySelector('footer')?.remove();
@@ -593,25 +729,35 @@ popover(insertButton, insertMenu, {
   onClose: reason => { if (reason === 'escape') focusEditor(); },
 });
 
+const jumpAlignTimers: ReturnType<typeof setTimeout>[] = [];
+let jumpAlignScrolling = false;
+function cancelJumpAligns() {
+  for (const timer of jumpAlignTimers.splice(0)) clearTimeout(timer);
+}
+window.addEventListener('scroll', () => { if (!jumpAlignScrolling) cancelJumpAligns(); }, {passive:true});
 function jump(segment: Segment, query?: string, alignTop = true) {
   const chunk = segmentChunks.get(segment.id);
   if (!chunk) return;
   mountChunk(chunk);
   const element = elements.get(segment.id);
   if (!element) return;
+  cancelJumpAligns();
   const align = () => {
     const target = element.querySelector<HTMLElement>('h1,h2,h3,h4,h5,h6') ?? element;
     if (alignTop) {
       const delta = target.getBoundingClientRect().top - toolbarBottom();
-      if (Math.abs(delta) > 1) window.scrollBy(0, delta);
+      if (Math.abs(delta) > 1) {
+        jumpAlignScrolling = true;
+        window.scrollBy(0, delta);
+        setTimeout(() => { jumpAlignScrolling = false; }, 50);
+      }
     } else target.scrollIntoView({block: 'center'});
   };
   align();
   requestAnimationFrame(() => { align(); requestAnimationFrame(align); });
   // Content-visibility and lazy chunk mounting can settle after the first two
-  // frames. Re-align once the layout is stable.
-  setTimeout(align, 80);
-  setTimeout(align, 160);
+  // frames. Re-align briefly; any user scroll cancels the pending corrections.
+  for (const delay of [80, 160, 260, 380, 520, 680]) jumpAlignTimers.push(setTimeout(align, delay));
   element.focus({preventScroll: true});
   root.querySelector('.search-hit')?.classList.remove('search-hit');
   element.classList.add('search-hit');

@@ -71,17 +71,79 @@ test('edit an included file, mirror duplicate, undo/redo, save only child, offli
   expect(await page.locator('.ProseMirror').count()).toBe(1);
   await mkdir('bench/results',{recursive:true}); await page.screenshot({path:'bench/results/editor.png',fullPage:true});
 });
-test('HTML and extensions are raw protected, formatting and tables remain editable',async ({page}) => {
-  const host = await launch(page,{[root]:'# Architecture\n\nA **bold** paragraph.\n\n| A | B |\n| --- | --- |\n| One | Two |\n\n<script>window.PWNED=true</script>\n\n- [ ] Task\n- [x] Done\n'});
-  await expect(page.locator('table')).toBeVisible();
-  await page.getByText('One',{exact:true}).click(); await expect(page.locator('.ProseMirror table')).toBeVisible();
-  await page.locator('.segment').filter({hasText:'window.PWNED'}).click();
-  await expect(page.locator('textarea')).toHaveValue('<script>window.PWNED=true</script>\n\n');
+test('HTML stays visual, unsafe HTML is sanitized and tables remain editable',async ({page}) => {
+  const host = await launch(page,{[root]:'# Architecture\n\nA **bold** paragraph.\n\n| A | B |\n| :--- | ---: |\n| One :white_check_mark: | Two |\n\n<script>window.PWNED=true</script>\n\n<kbd>Ctrl</kbd> and <mark>safe</mark>\n\n- [ ] Task\n- [x] Done\n'});
+  await expect(page.locator('.table-scroll table')).toBeVisible();
+  await mkdir('bench/results',{recursive:true});
+  await page.screenshot({path:'bench/results/table-visual.png',fullPage:true});
+  await page.getByText(/One/).first().click(); await expect(page.locator('.ProseMirror table')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.getByText('A bold paragraph.',{exact:true}).click();
+  await page.locator('.ProseMirror').press('Control+End');
+  await page.keyboard.press('Escape');
+  await page.locator('.segment.source-notice').click();
+  const dialog=page.getByRole('dialog');
+  await expect(dialog).toContainText('Edit HTML block');
+  await expect(dialog.locator('.block-editor-source')).toHaveValue(/window\.PWNED/);
+  await expect(page.locator('.segment textarea')).toHaveCount(0);
+  await dialog.getByRole('button',{name:'Cancel'}).click();
   expect(await page.evaluate(() => (window as any).PWNED)).toBeUndefined();
+  await page.locator('.segment').filter({hasText:'Ctrl'}).click();
+  await expect(page.locator('.html-visual-editor')).toHaveAttribute('contenteditable','true');
+  await expect(page.locator('.segment textarea')).toHaveCount(0);
+  await page.evaluate(()=>{
+    const editor=document.querySelector<HTMLElement>('.html-visual-editor')!;
+    const keyboard=editor.querySelector('kbd')!;
+    editor.focus();
+    const range=document.createRange();range.selectNodeContents(keyboard);range.collapse(false);
+    const selection=getSelection()!;selection.removeAllRanges();selection.addRange(range);
+  });
+  await page.keyboard.type('!');
+  await expect(page.locator('.html-visual-editor')).toContainText('Ctrl!');
+  await page.getByRole('button',{name:'Done'}).click();
+  await expect(page.locator('.html-visual-editor')).toHaveCount(0);
+  await expect(page.locator('.segment kbd')).toHaveText('Ctrl!');
   await page.getByText('A bold paragraph.',{exact:true}).click();
   await page.locator('.ProseMirror').press('Control+End'); await page.keyboard.type(' safe');
   await page.keyboard.press('Control+s'); await expect.poll(() => host.writes.length).toBe(1);
-  expect(host.files[root]).toContain('<script>window.PWNED=true</script>'); expect(host.errors).toEqual([]);
+  expect(host.files[root]).toContain('<script>window.PWNED=true</script>'); expect(host.files[root]).toContain('<kbd>Ctrl!</kbd>'); expect(host.errors).toEqual([]);
+});
+
+test('document and outline headings expose a clear hierarchy',async({page})=>{
+  await launch(page,{[root]:'# Level one\n\n## Level two\n\n### Level three\n\n#### Level four\n\n##### Level five\n\n###### Level six\n\nBody text.\n'});
+  const metrics=await page.evaluate(()=>{
+    const headingSizes=Object.fromEntries(['h1','h2','h3','h4','h5','h6'].map(tag=>[tag,parseFloat(getComputedStyle(document.querySelector('#document '+tag)!).fontSize)]));
+    return {headingSizes,body:parseFloat(getComputedStyle(document.querySelector('#document')!).fontSize),width:document.querySelector('#document')!.getBoundingClientRect().width};
+  });
+  expect(metrics.headingSizes.h1).toBeGreaterThan(metrics.headingSizes.h2);
+  expect(metrics.headingSizes.h2).toBeGreaterThan(metrics.headingSizes.h3);
+  expect(metrics.headingSizes.h3).toBeGreaterThan(metrics.headingSizes.h4);
+  expect(metrics.headingSizes.h4).toBeGreaterThan(metrics.headingSizes.h5);
+  expect(metrics.headingSizes.h5).toBeGreaterThanOrEqual(metrics.headingSizes.h6);
+  for(const size of Object.values(metrics.headingSizes)) expect(size).toBeGreaterThanOrEqual(metrics.body);
+  expect(metrics.width).toBeGreaterThan(1000);
+  await mkdir('bench/results',{recursive:true});
+  await page.screenshot({path:'bench/results/typography.png',fullPage:true});
+  await openOutline(page);
+  const levels=await page.locator('#navigation .navigation-result').evaluateAll(items=>items.map(item=>({level:item.getAttribute('data-level'),size:parseFloat(getComputedStyle(item).fontSize),badge:getComputedStyle(item,'::before').content,current:item.getAttribute('aria-current')})));
+  expect(levels.map(item=>item.level)).toEqual(['1','2','3','4','5','6']);
+  expect(levels[0].size).toBeGreaterThan(levels[2].size);
+  expect(levels[5].size).toBeLessThan(levels[2].size);
+  expect(levels.every(item=>item.badge.includes('H'))).toBe(true);
+  expect(levels.filter(item=>item.current==='location')).toHaveLength(1);
+  await page.screenshot({path:'bench/results/outline-hierarchy.png',fullPage:false});
+});
+
+test('complex rendered blocks open a visual editor instead of inline raw text',async({page})=>{
+  await launch(page,{[root]:'# Architecture\n\n> [!NOTE]\n> Alert body.\n\n!!! tip "Hint"\n    Tip body.\n\nTerm\n: Definition\n\nText[^1].\n\n[^1]: Footnote body.\n\n[ref]: https://example.com\n\n<span>styled</span>\n'});
+  const selectors=['blockquote.md-alert','.admonition','dl','.footnote-def','.reference-defs'];
+  for(const selector of selectors){
+    await page.locator(selector).first().click();
+    await expect(page.locator('.block-editor-dialog')).toBeVisible();
+    await expect(page.locator('.segment textarea')).toHaveCount(0);
+    await expect(page.locator('.block-editor-preview')).toBeVisible();
+    await page.locator('.block-editor-dialog').getByRole('button',{name:'Cancel'}).click();
+  }
 });
 test('large document lazy rendering: bounded editor count and measured input P95',async ({page}) => {
   const host = await launch(page,{[root]:markdown(5*1024*1024)});
@@ -160,7 +222,7 @@ test('read-only blocks diagram editing and copies through the host',async({page}
 });
 test('all 26 review samples render as code; aliases and editing keys work',async({page})=>{
   const literal=readFileSync('docs/review-artifacts/interaction-audit.ts','utf8').match(/const cases:[^\r\n]*=({[\s\S]*?});\s*const report/)![1];const samples=Function('return ('+literal+')')()as Record<string,{language:string;code:string}>;
-  const host=await launch(page,{[root]:'# Architecture\n\n'+Object.values(samples).map(sample=>'```'+sample.language+'\n'+sample.code+'\n```\n\n').join('')});await expect(page.locator('.raw-preview')).toHaveCount(0);await expect(page.locator('pre > code')).toHaveCount(26);expect(await page.locator('.hljs-keyword').count()).toBeGreaterThan(15);await mkdir('docs/review-artifacts/response-0.3/ui',{recursive:true});for(const [index,name]of Object.keys(samples).entries()){const block=page.locator('pre').nth(index);await block.scrollIntoViewIfNeeded();await block.screenshot({path:'docs/review-artifacts/response-0.3/ui/code-'+name.replace(/[^a-z0-9-]/gi,'_')+'.png'});}
+  const host=await launch(page,{[root]:'# Architecture\n\n'+Object.values(samples).map(sample=>'```'+sample.language+'\n'+sample.code+'\n```\n\n').join('')});await expect(page.locator('.raw-preview')).toHaveCount(0);await expect(page.locator('pre > code')).toHaveCount(26);expect(await page.locator('.hljs-keyword').count()).toBeGreaterThan(15);await mkdir('docs/review-artifacts/response-2.1.0/ui',{recursive:true});for(const [index,name]of Object.keys(samples).entries()){const block=page.locator('pre').nth(index);await block.scrollIntoViewIfNeeded();await block.screenshot({path:'docs/review-artifacts/response-2.1.0/ui/code-'+name.replace(/[^a-z0-9-]/gi,'_')+'.png'});}
   const code=page.locator('pre > code').first();await code.click();await expect(page.locator('.editing-code select')).toHaveValue('cpp');await expect(page.locator('.ProseMirror .hljs-keyword').first()).toBeVisible();await page.locator('.ProseMirror').press('Control+Home');await page.keyboard.press('Tab');await expect.poll(()=>host.repository.sources.get(root)!.pieces.some(piece=>piece.raw.includes('  #include'))).toBe(true);await page.keyboard.press('Shift+Tab');await page.locator('.editing-code select').selectOption('protobuf');await expect.poll(()=>host.files[root]).toContain('Architecture');await page.keyboard.press('Control+s');await expect.poll(()=>host.files[root]).toContain('```protobuf');
 });
 test('30k navigation hits stay bounded and panel switches do not hide it',async({page})=>{
@@ -230,7 +292,7 @@ test('extended Markdown renders safely with resolvable references and TOC',async
   await expect(page.locator('blockquote.md-alert-note')).toContainText('Alert body');
   await expect(page.locator('blockquote.md-alert-tip')).toHaveAttribute('data-title','Custom title');
   await expect(page.locator('.admonition')).toContainText('Admonition body');
-  await expect(page.locator('.segment:not(.frontmatter-block) dl dt')).toHaveText('Term');
+  await expect(page.locator('dl dt').filter({hasText:'Term'})).toHaveCount(1);
   await expect(page.locator('.katex math')).toHaveCount(2);
   await expect(page.locator('mark').filter({hasText:'highlight'})).toBeVisible();
   await expect(page.locator('sub')).toHaveText('2');
@@ -261,9 +323,13 @@ test('extended Markdown renders safely with resolvable references and TOC',async
   expect(await page.evaluate(()=>Math.abs((document.getElementById('heading-two')?.getBoundingClientRect().top??0)-document.querySelector('#toolbar')!.getBoundingClientRect().bottom))).toBeLessThanOrEqual(4);
 
   await page.locator('.math-block').click();
-  const source=page.locator('.segment textarea');
-  await expect(source).toBeVisible();
-  expect(await source.inputValue()).toContain('\\int_0^1');
+  const dialog=page.getByRole('dialog');
+  await expect(dialog).toContainText('Edit math block');
+  const source=dialog.locator('.block-editor-source');
+  await expect(source).toHaveValue(/\\int_0\^1/);
+  await expect(page.locator('.segment textarea')).toHaveCount(0);
+  await dialog.getByRole('button',{name:'Cancel'}).click();
+  await expect(page.locator('.math-block')).toBeVisible();
   await expect(page.locator('.ProseMirror')).toHaveCount(0);
 });
 
@@ -295,7 +361,7 @@ test('navigation follows scroll with one aria-current and aligns the clicked hea
   await expect(page.locator('#navigation [aria-current=location]')).toHaveText('Heading 51');
   const bodyBeforeJump=await page.evaluate(()=>window.scrollY);
   await page.locator('#navigation .navigation-result').filter({hasText:/^Heading 70$/}).click();
-  await page.waitForTimeout(180);
+  await page.waitForTimeout(760);
   const alignment=await page.evaluate(()=>{const segment=[...document.querySelectorAll('.segment')].find(element=>element.textContent?.trim().startsWith('Heading 70'));const heading=segment?.querySelector('h1,h2,h3,h4,h5,h6')??segment;const toolbar=document.querySelector('#toolbar')!;return {top:heading!.getBoundingClientRect().top,bottom:toolbar.getBoundingClientRect().bottom};});
   expect(Math.abs(alignment.top-alignment.bottom)).toBeLessThanOrEqual(4);
   const afterJump=await page.evaluate(()=>window.scrollY);

@@ -37,6 +37,11 @@ const SAFE_HTML: sanitizeHtml.IOptions = {
   },
 };
 
+/** Sanitize an already-rendered HTML fragment with the same allowlist. */
+export function sanitizeHtmlFragment(html: string) {
+  return sanitizeHtml(html, SAFE_HTML);
+}
+
 export function footnoteAnchor(id: string) {
   return id.replace(/[^A-Za-z0-9_-]/g, '_');
 }
@@ -485,6 +490,14 @@ export function markdownTokenizer(html = false) {
   md.block.ruler.before('paragraph', 'md_abbreviation', abbreviationBlock, {alt: ['paragraph']});
   md.block.ruler.before('paragraph', 'md_admonition', admonitionBlock, {alt: ['paragraph']});
   md.block.ruler.before('paragraph', 'md_comment_block', commentBlock, {alt: ['paragraph']});
+  md.core.ruler.after('emoji', 'md_emoji_text', state => {
+    for (const token of state.tokens) {
+      if (token.type !== 'inline' || !token.children) continue;
+      for (const child of token.children) {
+        if (child.type === 'emoji') child.type = 'text';
+      }
+    }
+  });
   md.core.ruler.after('inline', 'md_alerts', alertRule);
   md.core.ruler.after('inline', 'md_abbreviations', abbreviationRule);
 
