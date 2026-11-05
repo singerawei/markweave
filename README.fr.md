@@ -29,7 +29,7 @@ MarkWeave transforme des fichiers `.md` ordinaires en un document modifiable au 
 
 Il est conçu pour les documents qui grandissent. Composez un document continu à partir de plusieurs fichiers avec `@import`, modifiez chaque section incluse sur place et n'enregistrez que les fichiers qui ont réellement changé. Aucun compte, aucune base de données, aucune télémétrie et aucun navigateur requis.
 
-> **Aperçu :** la version 2.1.0 est un aperçu pour Windows x64. Installez-la depuis [GitHub Releases](https://github.com/singerawei/markweave/releases).
+> **Aperçu :** la version 2.1.1 est un aperçu pour Windows x64. Installez-la depuis [GitHub Releases](https://github.com/singerawei/markweave/releases).
 
 ## Ce qui le distingue
 
@@ -54,7 +54,7 @@ Il est conçu pour les documents qui grandissent. Composez un document continu �
 
 **Prérequis :** Windows x64 et VS Code 1.100 ou supérieur. Aucune installation séparée de Chrome ou Edge n'est nécessaire.
 
-1. Téléchargez `markweave-win32-x64-2.1.0.vsix` depuis [GitHub Releases](https://github.com/singerawei/markweave/releases).
+1. Téléchargez `markweave-win32-x64-2.1.1.vsix` depuis [GitHub Releases](https://github.com/singerawei/markweave/releases).
 2. Dans VS Code, ouvrez **Extensions**, cliquez sur **… → Installer depuis un VSIX…** et sélectionnez le fichier.
 3. Rechargez VS Code.
 4. Faites un clic droit sur un fichier `.md` et choisissez **Ouvrir avec… → Modular Markdown Editor**.
@@ -129,7 +129,7 @@ Tous les raccourcis sont des commandes VS Code et peuvent être réassignés. Co
 - **Enregistrer sous** doit rester dans le même dossier pour que les includes relatifs continuent de fonctionner.
 - Les blocs trop volumineux reviennent à l'éditeur de texte : code de plus de 128 Kio, texte de plus de 16 Kio ou tableaux de plus de 200 lignes.
 - Les inclusions wiki (`![[Page]]`) s'ouvrent sous forme de cartes cliquables, et non de transclusions complètes.
-- L'aperçu 2.1.0 est destiné à Windows x64. Le seuil de publication stable recueille encore des preuves réelles d'utilisation, d'IME, de défilement long et d'installation.
+- L'aperçu 2.1.1 est destiné à Windows x64. Le seuil de publication stable recueille encore des preuves réelles d'utilisation, d'IME, de défilement long et d'installation.
 
 ## Développement
 

@@ -29,7 +29,7 @@ MarkWeave turns ordinary `.md` files into a click-to-edit document inside VS Cod
 
 It is built for documents that grow. Compose one continuous document from several files with `@import`, edit any included section in place, and save only the files that actually changed. No account, no database, no telemetry, and no browser required.
 
-> **Preview:** 2.1.0 is a Windows x64 preview. Install it from [GitHub Releases](https://github.com/singerawei/markweave/releases).
+> **Preview:** 2.1.1 is a Windows x64 preview. Install it from [GitHub Releases](https://github.com/singerawei/markweave/releases).
 
 ## What makes it different
 
@@ -54,7 +54,7 @@ It is built for documents that grow. Compose one continuous document from severa
 
 **Requirements:** Windows x64 and VS Code 1.100 or newer. No separate Chrome or Edge installation is needed.
 
-1. Download `markweave-win32-x64-2.1.0.vsix` from [GitHub Releases](https://github.com/singerawei/markweave/releases).
+1. Download `markweave-win32-x64-2.1.1.vsix` from [GitHub Releases](https://github.com/singerawei/markweave/releases).
 2. In VS Code, open **Extensions**, click **… → Install from VSIX…**, and select the file.
 3. Reload VS Code.
 4. Right-click any `.md` file and choose **Open With… → Modular Markdown Editor**.
@@ -129,7 +129,7 @@ All shortcuts are VS Code commands and can be remapped. See [docs/KEYBINDINGS.md
 - **Save As** must stay in the same folder so relative includes keep working.
 - Oversized blocks fall back to the Text Editor: code over 128 KiB, prose over 16 KiB, or tables over 200 rows.
 - Wiki embeds (`![[Page]]`) open as clickable cards rather than full transclusions.
-- The 2.1.0 preview is for Windows x64. The stable release gate is still collecting real-world, IME, long-scroll, and installation evidence.
+- The 2.1.1 preview is for Windows x64. The stable release gate is still collecting real-world, IME, long-scroll, and installation evidence.
 
 ## Development
 
