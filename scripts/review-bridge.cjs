@@ -3,7 +3,7 @@ const http = require('node:http');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 exports.run = async function () {
-  const extension = vscode.extensions.getExtension('markweave.markweave');
+  const extension = vscode.extensions.getExtension('singeraw.markweave');
   await extension.activate();
   const provider = extension.exports.provider;
  const crypto=require('node:crypto');const buildHashes={};for(const name of ['editor.js','editor.css','extension.js','mermaid-runtime.js','export-renderer.js'])buildHashes[name]=crypto.createHash('sha256').update(await fs.readFile(path.join(extension.extensionPath,'dist',name))).digest('hex');

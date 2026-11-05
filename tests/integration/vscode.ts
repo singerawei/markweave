@@ -9,7 +9,7 @@ import{serializeSource}from'../../src/document/serializer';
 
 export async function run() {
   const directory = await realpath(await mkdtemp(join(vscode.workspace.workspaceFolders![0].uri.fsPath,'fixture-')));
-  const extension = vscode.extensions.getExtension('markweave.markweave')!;
+  const extension = vscode.extensions.getExtension('singeraw.markweave')!;
   await extension.activate();
   const provider = extension.exports.provider as EditorProvider;
   const master = join(directory,'MASTER.md'),child = join(directory,'child.md');

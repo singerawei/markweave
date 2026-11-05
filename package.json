@@ -2,7 +2,7 @@
   "name": "markweave",
   "version": "2.1.1",
   "displayName": "MarkWeave — Modular Markdown Editor",
-  "publisher": "markweave",
+  "publisher": "singeraw",
   "icon": "media/markweave-icon.png",
   "engines": {
     "vscode": "^1.100.0"

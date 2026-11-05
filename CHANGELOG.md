@@ -2,6 +2,7 @@
 
 ## 2.1.1
 
+- Change the Marketplace publisher to `singeraw`; the extension identifier is now `singeraw.markweave`.
 - Refine reading typography toward the VS Code/GitHub Markdown preview: clearer H1–H6 scale, tighter spacing, calmer links and quotes, bordered tables with zebra rows, and quieter code blocks.
 - Add automated dark-theme palette coverage and refresh the generated UI screenshots.
 - Rewrite the README in English with a hero screenshot, and add 简体中文, 日本語, 한국어, Español, Français, Deutsch and Русский editions with a shared language picker.
