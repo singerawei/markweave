@@ -29,7 +29,7 @@ MarkWeave 把普通的 `.md` 文件变成 VS Code 中点击即可编辑的文档
 
 它为会不断增长的文档而设计。用 `@import` 把多个文件组合成一篇连续文档，直接编辑被引用的章节，保存时只写回真正发生变化的源文件。无需账号、数据库或遥测，也不需要浏览器。
 
-> **预览版：** 2.1.0 是 Windows x64 预览版。请从 [GitHub Releases](https://github.com/singerawei/markweave/releases) 安装。
+> **预览版：** 2.1.1 是 Windows x64 预览版。请从 [GitHub Releases](https://github.com/singerawei/markweave/releases) 安装。
 
 ## 特色
 
@@ -54,7 +54,7 @@ MarkWeave 把普通的 `.md` 文件变成 VS Code 中点击即可编辑的文档
 
 **要求：** Windows x64，VS Code 1.100 或更高版本。无需单独安装 Chrome 或 Edge。
 
-1. 从 [GitHub Releases](https://github.com/singerawei/markweave/releases) 下载 `markweave-win32-x64-2.1.0.vsix`。
+1. 从 [GitHub Releases](https://github.com/singerawei/markweave/releases) 下载 `markweave-win32-x64-2.1.1.vsix`。
 2. 在 VS Code 中打开「扩展」，点击 **… → 从 VSIX 安装…**，选择该文件。
 3. 重新加载 VS Code。
 4. 右键任意 `.md` 文件，选择 **打开方式… → Modular Markdown Editor**。
@@ -129,7 +129,7 @@ npm run package
 - **另存为** 必须保持在同一目录，以维持相对 Include 语义。
 - 超出编辑上限的块会回退到文本编辑器：代码 128 KiB、正文 16 KiB、表格 200 行。
 - Wiki 嵌入 `![[Page]]` 以可点击卡片呈现，而不是完整的全文转嵌。
-- 2.1.0 预览版面向 Windows x64。稳定发布门禁仍在收集真实用户、输入法、长滚动和安装验收证据。
+- 2.1.1 预览版面向 Windows x64。稳定发布门禁仍在收集真实用户、输入法、长滚动和安装验收证据。
 
 ## 开发
 

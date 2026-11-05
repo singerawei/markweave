@@ -29,7 +29,7 @@ MarkWeave verwandelt gewöhnliche `.md`-Dateien in ein Dokument, das sich in VS 
 
 Es ist für Dokumente gedacht, die wachsen. Fassen Sie mehrere Dateien mit `@import` zu einem durchgehenden Dokument zusammen, bearbeiten Sie eingebundene Abschnitte direkt und speichern Sie nur die Dateien, die sich tatsächlich geändert haben. Kein Konto, keine Datenbank, keine Telemetrie und kein Browser erforderlich.
 
-> **Vorschau:** 2.1.0 ist eine Vorschau für Windows x64. Installation über [GitHub Releases](https://github.com/singerawei/markweave/releases).
+> **Vorschau:** 2.1.1 ist eine Vorschau für Windows x64. Installation über [GitHub Releases](https://github.com/singerawei/markweave/releases).
 
 ## Was es anders macht
 
@@ -54,7 +54,7 @@ Es ist für Dokumente gedacht, die wachsen. Fassen Sie mehrere Dateien mit `@imp
 
 **Voraussetzungen:** Windows x64 und VS Code 1.100 oder neuer. Chrome oder Edge müssen nicht separat installiert werden.
 
-1. Laden Sie `markweave-win32-x64-2.1.0.vsix` von [GitHub Releases](https://github.com/singerawei/markweave/releases) herunter.
+1. Laden Sie `markweave-win32-x64-2.1.1.vsix` von [GitHub Releases](https://github.com/singerawei/markweave/releases) herunter.
 2. Öffnen Sie in VS Code **Erweiterungen**, klicken Sie auf **… → Aus VSIX installieren…** und wählen Sie die Datei.
 3. Laden Sie VS Code neu.
 4. Klicken Sie mit der rechten Maustaste auf eine `.md`-Datei und wählen Sie **Öffnen mit… → Modular Markdown Editor**.
@@ -129,7 +129,7 @@ Alle Tastenkürzel sind VS Code-Befehle und können neu belegt werden. Die volls
 - **Speichern unter** muss im selben Ordner bleiben, damit relative Includes weiter funktionieren.
 - Übergroße Blöcke fallen auf den Texteditor zurück: Code über 128 KiB, Fließtext über 16 KiB oder Tabellen über 200 Zeilen.
 - Wiki-Einbettungen (`![[Page]]`) öffnen sich als anklickbare Karten, nicht als vollständige Transklusionen.
-- Die Vorschau 2.1.0 ist für Windows x64. Das Gate für die stabile Version sammelt noch Nachweise aus realer Nutzung, IME, langem Scrollen und Installation.
+- Die Vorschau 2.1.1 ist für Windows x64. Das Gate für die stabile Version sammelt noch Nachweise aus realer Nutzung, IME, langem Scrollen und Installation.
 
 ## Entwicklung
 

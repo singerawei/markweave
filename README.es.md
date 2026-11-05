@@ -29,7 +29,7 @@ MarkWeave convierte archivos `.md` normales en un documento editable con un clic
 
 Está pensado para documentos que crecen. Combina varios archivos en un único documento continuo con `@import`, edita cualquier sección incluida en el sitio y guarda solo los archivos que realmente cambiaron. Sin cuenta, sin base de datos, sin telemetría y sin navegador.
 
-> **Vista previa:** 2.1.0 es una vista previa para Windows x64. Instálala desde [GitHub Releases](https://github.com/singerawei/markweave/releases).
+> **Vista previa:** 2.1.1 es una vista previa para Windows x64. Instálala desde [GitHub Releases](https://github.com/singerawei/markweave/releases).
 
 ## Qué lo hace diferente
 
@@ -54,7 +54,7 @@ Está pensado para documentos que crecen. Combina varios archivos en un único d
 
 **Requisitos:** Windows x64 y VS Code 1.100 o superior. No hace falta instalar Chrome ni Edge por separado.
 
-1. Descarga `markweave-win32-x64-2.1.0.vsix` desde [GitHub Releases](https://github.com/singerawei/markweave/releases).
+1. Descarga `markweave-win32-x64-2.1.1.vsix` desde [GitHub Releases](https://github.com/singerawei/markweave/releases).
 2. En VS Code, abre **Extensiones**, pulsa **… → Instalar desde VSIX…** y selecciona el archivo.
 3. Recarga VS Code.
 4. Haz clic derecho en cualquier archivo `.md` y elige **Abrir con… → Modular Markdown Editor**.
@@ -129,7 +129,7 @@ Todos los atajos son comandos de VS Code y se pueden reasignar. Consulta [docs/K
 - **Guardar como** debe permanecer en la misma carpeta para que los includes relativos sigan funcionando.
 - Los bloques demasiado grandes vuelven al editor de texto: código de más de 128 KiB, prosa de más de 16 KiB o tablas de más de 200 filas.
 - Las incrustaciones wiki (`![[Page]]`) se abren como tarjetas en las que se puede hacer clic, no como transclusiones completas.
-- La vista previa 2.1.0 es para Windows x64. La compuerta de la versión estable todavía está recopilando evidencias de uso real, IME, desplazamiento prolongado e instalación.
+- La vista previa 2.1.1 es para Windows x64. La compuerta de la versión estable todavía está recopilando evidencias de uso real, IME, desplazamiento prolongado e instalación.
 
 ## Desarrollo
 
