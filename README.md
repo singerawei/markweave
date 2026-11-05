@@ -1,70 +1,68 @@
-<p align="center"><img src="media/markweave-logo.png" alt="MarkWeave" width="128"></p>
+<p align="center"><img src="media/markweave-logo.png" alt="MarkWeave" width="104"></p>
 
-# MarkWeave
+<h1 align="center">MarkWeave</h1>
 
-**本地优先的 VS Code Markdown 所见即所得编辑器。**
+<p align="center"><strong>A local-first Markdown editor for VS Code.</strong><br>
+Click any block to edit it in place — and keep plain <code>.md</code> files as the source of truth.</p>
 
-MarkWeave 让 `.md` 文件保持为唯一数据源，同时提供点击即编辑的可视化体验。它支持 `@import` 跨文件组合；在同一篇连续文档中编辑被引用内容时，保存只会写回真正变化的源文件。无需账号、数据库或浏览器；除你选择加载的远程图片外，不会主动请求网络。
+<p align="center">
+  <strong>English</strong> ·
+  <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ja.md">日本語</a> ·
+  <a href="README.ko.md">한국어</a> ·
+  <a href="README.es.md">Español</a> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.de.md">Deutsch</a> ·
+  <a href="README.ru.md">Русский</a>
+</p>
 
-> 当前版本：`2.1.0`（MarkWeave，Windows x64 预览版）。重做了排版/标题层级、全宽阅读布局和可视化块编辑；稳定发布所需的完整人工/性能验收仍在收集中。
->
-> 从 MarkdownUP 升级：这是完整改名版本，扩展 ID 和设置前缀已变更；需要安装新的 VSIX，并按需重新设置选项。旧版 Release 仍保留。
+<p align="center">
+  <a href="https://github.com/singerawei/markweave/releases"><img src="https://img.shields.io/github/v/release/singerawei/markweave?include_prereleases&label=release&style=flat-square" alt="Release"></a>
+  <img src="https://img.shields.io/badge/platform-Windows%20x64-0078D6?style=flat-square" alt="Windows x64">
+  <img src="https://img.shields.io/badge/VS%20Code-1.100%2B-007ACC?style=flat-square" alt="VS Code 1.100+">
+  <img src="https://img.shields.io/badge/license-MIT-2ea44f?style=flat-square" alt="MIT">
+</p>
 
-## 功能特性
+<p align="center"><img src="media/markweave-hero.png" alt="MarkWeave editing a formatted Markdown document with a table and a syntax-highlighted code block" width="100%"></p>
 
-- **所见即所得编辑**：点击任意段落直接编辑，标题、列表、表格、任务列表、引用、代码和链接保持 Markdown 源码语义。
-- **可编辑 Includes**：嵌套与重复 `@import`，重复引用同步更新；保存只写目标源文件，未修改块和 Import 指令保留原文。
-- **可靠的源文件所有权**：循环/丢失 Include 局部报错，外部修改检测、冲突处理、热退出备份与恢复，多面板同步。
-- **导航与大纲**：Find / Outline 共用面板，标题随滚动高亮，点击结果精确对齐；Pin 固定导航并按文档保存。
-- **阅读排版**：全宽阅读布局、清晰的 H1–H6 层级、标题分隔线、Office 风格代码块、带斑马纹的表格、舒适的段落与列表间距。
-- **可视化编辑**：表格和行内格式在 ProseMirror 中原位编辑；安全 HTML 使用 rendered contenteditable；复杂扩展打开带实时预览的块编辑器，不再把正文变成内联原始文本。
-- **紧凑工具栏**：8 个一级控件；Insert 锚定菜单支持方向键/Home/End/Esc；工具栏可隐藏、可恢复、可进入专注模式。
-- **原生快捷键**：所有高频动作都是 VS Code 命令，可在 Keyboard Shortcuts 中重映射；tooltip 与 `aria-keyshortcuts` 平台化显示 Ctrl/Cmd。
-- **Mermaid 与代码块**：Mermaid 使用本地 Chromium 渲染、预热点、缓存与过期请求取消；图表和代码块各自只有一个操作菜单。
-- **长文档友好**：分批传输、视口附近按需渲染、远处卸载 DOM；超出编辑上限的块保留完整原文并提供 Text Editor 入口。
-- **PDF 导出**：包含未保存修改和完整 Include 内容，支持纸张、边距、字号、页眉页脚、页码、H1 分页与预览。
-- **扩展 Markdown 渲染**：GFM 自动链接、引用式链接、脚注、Alerts/Callouts、Admonitions、数学公式、定义列表、TOC、`==高亮==`、上下标、Emoji、Wiki 链接、注释、缩写和安全 HTML 子集。
-- **本地优先**：无遥测、无账号；主题跟随 VS Code，支持浅色、深色和高对比度。远程图片按你的选择打开即加载，其他内容不会主动请求网络。
+MarkWeave turns ordinary `.md` files into a click-to-edit document inside VS Code. Your files stay the single source of truth: every save writes Markdown back to the file that owns the content, so Git, your text editor, and every other Markdown tool keep working.
 
-## Markdown 兼容性
+It is built for documents that grow. Compose one continuous document from several files with `@import`, edit any included section in place, and save only the files that actually changed. No account, no database, no telemetry, and no browser required.
 
-| 语法 | 支持 |
-| --- | --- |
-| CommonMark 标题、段落、强调、行内代码、引用、列表、代码块、分隔线、转义/实体 | ✅ 可编辑 |
-| GFM 表格与对齐、任务列表、删除线、尖括号/裸 URL 自动链接 | ✅ 可编辑 |
-| 引用式链接 `[text][ref]` + 链接定义 | ✅ 富渲染；链接定义卡片 + 可视化块编辑器 |
-| 脚注 `[^1]` / `[^1]: ...` | ✅ 富渲染；带实时预览的块编辑器 |
-| GitHub Alerts / Obsidian Callouts `> [!NOTE]` | ✅ 富渲染，支持自定义标题和折叠 |
-| Admonitions `!!! note "Title"` | ✅ 富渲染；带实时预览的块编辑器 |
-| 数学 `$...$`、`$$...$$`、`\(...\)`、`\[...\]` | ✅ KaTeX MathML 渲染；带公式预览的块编辑器 |
-| 定义列表、缩写、`[TOC]` | ✅ 富渲染；带实时预览的块编辑器 |
-| `==高亮==`、`H~2~O`、`x^2^`（内部可嵌套强调） | ✅ 可编辑 |
-| 折叠 Callout `[!NOTE]-` / `[!TIP]+` | ✅ 可折叠 details |
-| `<details>` + Markdown 内容 | ✅ 内容按 Markdown 渲染并安全保留 |
-| Emoji `:smile:` | ✅ 富渲染、可编辑 |
-| Wikilink `[[Page]]`、嵌入 `![[Page]]` | ✅ 可点击打开；嵌入以卡片呈现，不做全文转嵌 |
-| Obsidian 注释 `%%...%%` | ✅ 内容隐藏，仅保留定位标记 |
-| HTML 安全子集（`kbd`、`mark`、`details`、`sub`、`sup` 等） | ✅ sanitized 渲染；原位 contenteditable 编辑；script/style/事件属性/危险协议移除 |
-| Frontmatter | ✅ 元数据卡片；点击打开带预览的块编辑器 |
-| Mermaid | ✅ 本地 Chromium 渲染 |
-| 远程图片 | ✅ 打开即加载（需网络；PDF 导出时下载并内嵌） |
+> **Preview:** 2.1.0 is a Windows x64 preview. Install it from [GitHub Releases](https://github.com/singerawei/markweave/releases).
 
-标准 GFM、表格、代码块、`==高亮==`/上下标与安全 HTML 保持原位可视化编辑；数学、脚注、Alerts、定义列表、TOC、Wiki、注释等复杂扩展打开带实时预览的块编辑器，块在文档中始终保持渲染态，不会切换为内联原始文本。
+## What makes it different
 
-## 安装
+- **Markdown in, Markdown out.** No proprietary format or hidden database. The rendered document and the source file stay in sync.
+- **Editable includes.** Import many files into one view; edits go back to the correct source file, including nested and repeated imports.
+- **Rendered, not replaced.** Complex blocks stay rendered while you edit them; they never turn into raw text areas.
+- **Local-first.** No telemetry and no login. The only network traffic comes from remote images in your document.
+- **Comfortable at scale.** Large documents are streamed and rendered near the viewport, with a native editor fallback for oversized blocks.
 
-### 从 Release 安装（推荐）
+## Features
 
-安装包作为 GitHub Release 资源提供，不直接提交到 Git 仓库，因为 VSIX 约 125 MB（内含 Mermaid/PDF 使用的 Chromium 引擎）。
+- **Click-to-edit** — click any paragraph, heading, list, table, task list, quote, code block, or link and edit it in place.
+- **Rich Markdown** — GFM tables, task lists, math, footnotes, alerts and callouts, admonitions, definition lists, TOC, wiki links, highlights, sub/superscript, emoji, frontmatter, and a safe HTML subset.
+- **Navigation** — Find and Outline share one panel, follow your scroll position, and can be pinned per document.
+- **Mermaid diagrams** — rendered locally and cached; copy, edit, zoom, or export to SVG or PNG.
+- **PDF export** — choose paper size, margins, font size, headers, footers, page numbers, and H1 page breaks. Unsaved edits are included.
+- **Theme-aware reading** — follows VS Code light, dark, and high-contrast themes.
+- **Keyboard-first** — every common action is a VS Code command and can be remapped in Keyboard Shortcuts.
+- **Long-document friendly** — progressive loading, viewport rendering, and unloading of distant content keep big files responsive.
 
-1. 打开 [GitHub Releases](https://github.com/singerawei/markweave/releases)，下载 `markweave-win32-x64-2.1.0.vsix`。
-2. 在 VS Code 中打开扩展视图，点击 **… → Install from VSIX…**，选择下载的文件。
-3. 重新加载 VS Code。
-4. 右键任意 `.md` 文件，选择 **Open With → Modular Markdown Editor**。
+## Install
 
-要求：**Windows x64**，**VS Code 1.100.0 或更高版本**。不需要额外安装 Chrome/Edge。
+**Requirements:** Windows x64 and VS Code 1.100 or newer. No separate Chrome or Edge installation is needed.
 
-### 从源码构建
+1. Download `markweave-win32-x64-2.1.0.vsix` from [GitHub Releases](https://github.com/singerawei/markweave/releases).
+2. In VS Code, open **Extensions**, click **… → Install from VSIX…**, and select the file.
+3. Reload VS Code.
+4. Right-click any `.md` file and choose **Open With… → Modular Markdown Editor**.
+
+The VSIX is about 125 MB because it bundles the Chromium engine used for Mermaid rendering and PDF export.
+
+<details>
+<summary>Build from source</summary>
 
 ```sh
 git clone https://github.com/singerawei/markweave.git
@@ -74,120 +72,78 @@ npx playwright install chromium-headless-shell
 npm run package
 ```
 
-生成的 `markweave-win32-x64-2.1.0.vsix` 可直接安装。开发调试可运行 `npm run check`、`npm run test:ui` 和 `npm run test:host`，或按 F5 启动扩展开发宿主。
+Requires Node.js 20.19+ (22 recommended). The generated VSIX is ready to install.
+</details>
 
-## 使用教程
+## Quick start
 
-### 1. 打开文档
+1. **Open** a `.md` file with **Open With… → Modular Markdown Editor**.
+2. **Edit** by clicking any block. Press `Ctrl/Cmd+S` to save or `Ctrl/Cmd+Shift+S` to save as.
+3. **Compose** several files into one view:
 
-右键 `.md` 文件 → **Open With…** → **Modular Markdown Editor**。如果文件被文本编辑器接管，使用 **Reopen Editor With…** 切换。文档标题和未保存状态由 VS Code 标签页显示。
+   ```markdown
+   # System design
 
-### 2. 编辑与保存
+   @import "./product/overview.md"
+   @import "./architecture/system.md"
+   @import "./features/payment.md"
+   ```
 
-点击正文中的任意块开始编辑，`Ctrl+S` 保存，`Ctrl+Shift+S` 另存为。`Ctrl+Z` / `Ctrl+Shift+Z` 使用 VS Code 的文档历史；输入框内保留原生撤销行为。跨文件的选择、拖放不会被拆分到多个源文件。
+   Edit the rendered sections directly; saving writes only the changed source files.
+4. **Navigate** with `Ctrl/Cmd+Shift+O`, insert blocks with `Ctrl/Cmd+Alt+I`, and export with **More → Export PDF**.
 
-### 3. 使用 Include 组合文档
+## Markdown support
 
-```markdown
-# 系统设计
+| Syntax | Editing |
+| --- | --- |
+| CommonMark headings, paragraphs, emphasis, code, quotes, lists, rules | ✅ In place |
+| GFM tables, alignment, task lists, strikethrough, autolinks | ✅ In place |
+| Highlight `==text==`, subscript, superscript, emoji | ✅ In place |
+| Safe HTML (`kbd`, `mark`, `details`, `sub`, `sup`, …) | ✅ Rendered contenteditable, sanitized |
+| Math `$...$`, `$$...$$` | ✅ KaTeX, block editor with live preview |
+| Footnotes, reference links, definition lists, abbreviations | ✅ Rendered, block editor with live preview |
+| GitHub alerts, Obsidian callouts, admonitions | ✅ Rendered, custom titles, foldable |
+| TOC, wiki links, Obsidian comments, frontmatter | ✅ Rendered |
+| Mermaid | ✅ Rendered locally |
+| Remote images | ✅ Loaded on open; downloaded for PDF |
 
-@import "./product/overview.md"
+Unsupported syntax is preserved rather than flattened.
 
-@import "./architecture/system.md"
+## Keyboard shortcuts
 
-@import "./features/payment.md"
-```
-
-在渲染后的连续文档中直接编辑被引用内容即可。保存时只写回发生变化的目标文件。新增或移除 Include 使用 **More → Manage includes**。
-
-### 4. 导航、固定与插入
-
-- **Navigate**：打开上次使用的 Find 或 Outline；再次触发会关闭面板（未固定时）。
-- **Pin**：将导航固定为常驻面板，状态按文档保存；固定后 Esc 不会关闭。
-- **Insert**：插入列表、代码块、表格、链接、图片、分隔线、Mermaid 等。没有编辑目标时按钮会禁用。
-- **More**：导出 PDF、管理 Include、阅读宽度、专注模式、文字大小、只读预览、查看源码、帮助和隐藏工具栏。
-
-### 5. Mermaid 与代码块
-
-Mermaid 图表渲染完成后，点击 **Diagram actions** 可复制、编辑、缩放、查看和导出 SVG/PNG。代码块使用语言选择器 + **Code actions** 菜单，支持复制与换行。复制只有在操作系统剪贴板回读成功后才提示成功。
-
-### 6. 导出 PDF
-
-打开 **More → Export PDF**，选择纸张、边距、字号、页眉页脚和页码，可先预览再导出。导出会包含当前未保存内容，但不会自动保存 Markdown。
-
-### 7. 扩展 Markdown
-
-```markdown
-> [!NOTE]
-> GitHub 风格提示块。
-
-!!! tip "提示"
-    兼容 Typora 的 Admonition。
-
-Euler: $e^{i\pi}+1=0$
-
-[返回章节](#heading-two)
-
-脚注[^1]，高亮 ==重点==、H~2~O、x^2^、:rocket:。
-
-[TOC]
-```
-
-标准语法和表格直接点击编辑。安全 HTML 会在原位进入 rendered contenteditable 编辑；数学、脚注、Alerts、定义列表、TOC、Wiki 链接和注释会打开带实时预览的块编辑器，文档中的块始终保持渲染态，不会再变成内联原始文本。远程图片打开即加载；`<script>`、事件处理属性和危险链接会被安全过滤。
-
-## 快捷键
-
-| 动作 | Windows / Linux | macOS |
+| Action | Windows / Linux | macOS |
 | --- | --- | --- |
-| 保存 / 另存为 | `Ctrl+S` / `Ctrl+Shift+S` | `Cmd+S` / `Cmd+Shift+S` |
-| 查找 / 大纲 | `Ctrl+F` / `Ctrl+Shift+O` | `Cmd+F` / `Cmd+Shift+O` |
-| 插入 | `Ctrl+Alt+I` | `Cmd+Alt+I` |
-| 固定导航 | `Ctrl+Alt+P` | `Cmd+Alt+P` |
-| 隐藏/显示工具栏 | `Ctrl+Alt+T` | `Cmd+Alt+T` |
-| 专注模式 | `Ctrl+Alt+F` | `Cmd+Alt+F` |
-| 帮助 | `?` 或 `Ctrl+Alt+H` | `?` 或 `Cmd+Alt+H` |
-| 加粗 / 斜体 | `Ctrl+B` / `Ctrl+I` | `Cmd+B` / `Cmd+I` |
+| Save / Save As | `Ctrl+S` / `Ctrl+Shift+S` | `Cmd+S` / `Cmd+Shift+S` |
+| Find | `Ctrl+F` | `Cmd+F` |
+| Outline / Navigate | `Ctrl+Shift+O` | `Cmd+Shift+O` |
+| Insert | `Ctrl+Alt+I` | `Cmd+Alt+I` |
+| Focus mode | `Ctrl+Alt+F` | `Cmd+Alt+F` |
+| Hide toolbar | `Ctrl+Alt+T` | `Cmd+Alt+T` |
+| Help | `?` or `Ctrl+Alt+H` | `?` or `Cmd+Alt+H` |
 
-所有快捷键都注册为 VS Code 命令，可在 **Keyboard Shortcuts** 中重映射。Outline 另提供 `Ctrl+Alt+O` 备用映射。完整的宿主冲突说明见 [docs/KEYBINDINGS.md](docs/KEYBINDINGS.md)。
+All shortcuts are VS Code commands and can be remapped. See [docs/KEYBINDINGS.md](docs/KEYBINDINGS.md) for the full list and host conflicts.
 
-## 设计边界
+## Good to know
 
-- 仅支持本地工作区中的 `.md` 文件；远程/虚拟文件系统、云同步和账号功能不在当前范围内。
-- 跨来源的复杂结构重排请在 Text Editor 中完成；单次编辑只归属一个源文件。
-- Save As 需要保持在同一目录，以维持相对 Include 语义。
-- 单块可视编辑上限：代码 128 KiB、正文 16 KiB、表格 200 行；超出后保留完整原文并引导到 Text Editor。
-- 复杂扩展（数学、脚注、Alerts、定义列表、TOC、Wiki 链接、注释、安全 HTML、Frontmatter）使用渲染态块编辑器；点击不会再切换到内联原始文本。安全 HTML 支持原位 contenteditable，其余扩展提供实时预览与源码/字段编辑。
-- Wiki 嵌入 `![[Page]]` 目前是点击卡片，不做 Obsidian 式全文转嵌。
-- 远程图片打开即加载；PDF 导出会下载远程图片并内嵌，因此导出时可能需要网络。
-- 当前提供的安装包为 Windows x64 MarkWeave 2.1.0 预览版；完整稳定发布仍需收集用户研究、真实 IME、长时间滚动和安装包验收证据。当前自动化冒烟与覆盖证据见 [docs/review-artifacts/response-2.1.0](docs/review-artifacts/response-2.1.0/README.md)。
+- Local `.md` files only. Remote and virtual file systems, cloud sync, and accounts are out of scope.
+- **Save As** must stay in the same folder so relative includes keep working.
+- Oversized blocks fall back to the Text Editor: code over 128 KiB, prose over 16 KiB, or tables over 200 rows.
+- Wiki embeds (`![[Page]]`) open as clickable cards rather than full transclusions.
+- The 2.1.0 preview is for Windows x64. The stable release gate is still collecting real-world, IME, long-scroll, and installation evidence.
 
-## 项目结构
-
-```text
-src/document   块解析、来源模型、Include 图、冲突与保存
-src/extension  VS Code CustomEditorProvider、PDF、Mermaid 服务
-src/webview    ProseMirror + markdown-it 前端、导航、工具栏、样式
-scripts        构建、打包、发布门禁与宿主测试
-tests          核心、往返、结构、宿主和 Playwright UI 测试
-bench          长文档/性能测试语料与结果
-docs           使用说明、快捷键审计与验收记录
-```
-
-## 开发
+## Development
 
 ```sh
 npm ci
-npm run check        # lint + typecheck + 76 项核心/扩展测试 + build
+npm run check        # lint, typecheck, core tests, build
 npx playwright install chromium
-npm run test:ui      # 26 项 UI 测试
-npm run test:host    # 真实 VS Code 宿主测试
-npm run bench
-npm run package
-npm run release:gate # 证据不足或超阈值时按设计失败
+npm run test:ui      # UI tests
+npm run test:host    # real VS Code host tests
+npm run package      # build the VSIX
 ```
 
-需要 Node.js 20.19+（推荐 22）。VSIX 打包会把本地 Chromium 引擎一起放入安装包，因此体积约 125 MB。
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow.
 
 ## License
 
-MIT. 第三方依赖与 Chromium 许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和 [LICENSE](LICENSE)。
+MIT. Third-party dependencies and Chromium licenses are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
