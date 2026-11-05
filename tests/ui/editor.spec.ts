@@ -18,7 +18,7 @@ async function launch(page:Page,files:Record<string,string>) {
     resolve:async (from,path) => new URL(path,from).href
   });
   const graph = new DocumentGraph(repository,'file:///C:/docs/MASTER.md'); await graph.build();
-  await page.setContent('<header><strong>MarkWeave</strong><span id="title"></span><span id="status"></span><button id="save">保存</button></header><nav id="toolbar"></nav><aside id="conflicts"></aside><div id="notice" hidden></div><main id="document"></main><footer>本地 Markdown · 点击正文编辑 · Ctrl/Cmd+S 保存</footer>');
+  await page.setContent('<!doctype html><html><head><meta charset="utf-8"></head><body><header><strong>MarkWeave</strong><span id="title"></span><span id="status"></span><button id="save">保存</button></header><nav id="toolbar"></nav><aside id="conflicts"></aside><div id="notice" hidden></div><main id="document"></main><footer>本地 Markdown · 点击正文编辑 · Ctrl/Cmd+S 保存</footer></body></html>');
   const publish = (message:unknown) => page.evaluate(message => window.postMessage(message,'*'),message);
   repository.on('change',event => { if (event.kind === 'piece') void publish({type:'patch',...event});else if(event.kind==='pieces')void publish({type:'pieces',...event}); });
   await page.exposeFunction('host',async (message:any) => {
@@ -132,6 +132,25 @@ test('document and outline headings expose a clear hierarchy',async({page})=>{
   expect(levels.every(item=>item.badge.includes('H'))).toBe(true);
   expect(levels.filter(item=>item.current==='location')).toHaveLength(1);
   await page.screenshot({path:'bench/results/outline-hierarchy.png',fullPage:false});
+});
+
+test('dark theme uses a GitHub-like readable palette',async({page})=>{
+  await launch(page,{[root]:'# Heading\n\nParagraph with [a link](https://example.com) and `code`.\n\n> quoted text\n\n| A | B |\n| --- | --- |\n| One | Two |\n\n```cpp\nint main() { return 0; }\n```\n'});
+  await page.evaluate(()=>{document.body.className='vscode-dark';document.body.style.cssText='--vscode-editor-background:#0d1117;--vscode-editor-foreground:#adbac7;--vscode-widget-border:#444c56;--vscode-textCodeBlock-background:#1c2128;--vscode-textLink-foreground:#539bf5;--vscode-descriptionForeground:#768390';});
+  await mkdir('bench/results',{recursive:true});
+  await page.screenshot({path:'bench/results/dark-theme.png',fullPage:true});
+  const colors=await page.evaluate(()=>({
+    body:getComputedStyle(document.querySelector('#document')!).color,
+    link:getComputedStyle(document.querySelector('#document a')!).color,
+    pre:getComputedStyle(document.querySelector('#document pre')!).backgroundColor,
+    quote:getComputedStyle(document.querySelector('#document blockquote')!).color,
+    keyword:getComputedStyle(document.querySelector('.hljs-keyword')!).color
+  }));
+  expect(colors.body).toBe('rgb(173, 186, 199)');
+  expect(colors.link).toBe('rgb(83, 155, 245)');
+  expect(colors.pre).toBe('rgb(28, 33, 40)');
+  expect(colors.quote).toBe('rgb(118, 131, 144)');
+  expect(colors.keyword).toBe('rgb(255, 123, 114)');
 });
 
 test('complex rendered blocks open a visual editor instead of inline raw text',async({page})=>{
